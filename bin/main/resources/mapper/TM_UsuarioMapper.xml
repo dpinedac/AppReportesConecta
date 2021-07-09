@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.appreportesconecta.dao.TM_UsuarioMapper">
+	
+	<select id="listarUsuario" parameterType="map"
+		resultType="com.appreportesconecta.domain.TM_Usuario">
+		
+		 SELECT TOP 1
+			 USU.TM05SUSRNAM
+			,ROL.TM04SROLDES
+		 FROM TM_USUARIOSC AS USU WITH (NOLOCK)
+		 INNER JOIN TM_USUARIO_ROLESSC AS USUROL WITH (NOLOCK)
+			 ON USUROL.TM05NUSRID = USU.TM05NUSRID
+		 INNER JOIN TM_ROLSEC AS ROL WITH (NOLOCK)
+			 ON ROL.TM04NROLID = USUROL.TM04NROLID
+		 WHERE ROL.TM04SROLDES IN ('Gestor (GES)', 'Supervisor (SUP)', 'Negociador (NEG)', 'Jefe Canal (JEFC)', 'Gerente de Operaciones (GOP)','Estudios','Administrador CobraTWO')
+		 AND USU.TM05SUSRNAM =  #{usuario,jdbcType=VARCHAR}  
+	</select>
+	
+</mapper>
