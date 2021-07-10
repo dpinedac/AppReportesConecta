@@ -10,6 +10,7 @@ import InputText from "primevue/inputtext"
 import Column from "primevue/column";
 import Panel from 'primevue/panel';
 import Card from 'primevue/card';
+import OrganizationChart from 'primevue/organizationchart';
 import "primevue/resources/themes/saga-blue/theme.css"       //theme
 import "primevue/resources/primevue.min.css"                 //core css
 import "primeicons/primeicons.css"                           //icons
@@ -23,4 +24,5 @@ createApp(App).use(router).use(router).use(router).use(router).use(PrimeVue)
 .component("Column",Column)
 .component("Panel",Panel)
 .component("Card",Card)
+.component("OrganizationChart", OrganizationChart)
 .component("font-awesome-icon", FontAwesomeIcon).mount('#app')

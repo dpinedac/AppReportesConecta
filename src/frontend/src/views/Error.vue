@@ -4,6 +4,14 @@
 
 <script>
 export default {
+  created () {
+  },
+  watch: {
+  },
+  props: {
+  },
+  methods: {
+  },
 
 }
 </script>

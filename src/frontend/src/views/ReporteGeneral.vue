@@ -1,6 +1,6 @@
 <template class="container">
   <Panel>
-    <h3>Reporte General Lazy</h3>
+    <h3>Reporte General</h3>
   </Panel>
 
   <Panel>
@@ -29,25 +29,20 @@
       <DataTable
         :value="citas"
         dataKey="id"
-        :totalRecords="totalRecords"
         :loading="loading"
-        @page="onPage($event)"
-        @sort="onSort($event)"
-        @filter="onFilter($event)"
         filterDisplay="row"
         :paginator="true"
         v-model:filters="filters"
         :rows="10"
-        :lazy="true"
         paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         :rowsPerPageOptions="[10, 20, 50]"
         responsiveLayout="scroll"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         :globalFilterFields="[
-          'usuario',
-          'cmoneda',
-          'fechaIniGest',
-          'fechaFinGest',
+          'DOCUMENTO',
+          'TM15NDEUOPE',
+          'GESTORGESTION',
+          'VGESTOR',
         ]"
         sortMode="multiple"
         stripedRows
@@ -63,7 +58,7 @@
                 @click="exportCSV($event)"
               />
             </div>
-            <!--   <div class="col-auto">
+            <div class="col-auto">
               <Button
                 type="button"
                 icon="pi pi-filter-slash"
@@ -71,40 +66,33 @@
                 class="p-button-outlined"
                 @click="clearFilter1()"
               />
-            </div> -->
-            <!--   <div class="col-auto flex-right">
+            </div>
+            <div class="col-auto flex-right">
               <span class="p-input-icon-left">
                 <i class="pi pi-search" />
                 <InputText
-                  v-model="filters[('usuario', 'moneda')].value"
+                  v-model="
+                    filters[
+                      ('global')
+                    ].value
+                  "
                   placeholder="Buscar"
                 />
               </span>
-            </div> -->
+            </div>
           </div>
         </template>
         <template #empty> No existen datos </template>
         <template #loading> Cargando información. Por favor espere. </template>
+        <!-- DOCUMENTO -->
+        <Column field="DOCUMENTO" header="Documento" :sortable="true"></Column>
         <Column
-          field="documento"
-          header="Documento"
-          filterMatchMode="startsWith"
-          ref="documento"
+          field="TM15NDEUOPE"
+          header="Operacion"
           :sortable="true"
-        >
-          <template #filter="{ filterModel,filterCallback }">
-            <InputText
-              type="text"
-              v-model="filterModel.value"
-              @keydown.enter="filterCallback()"
-              class="p-column-filter"
-              placeholder="Search by name"
-            />
-          </template>
-        </Column>
-        <Column field="TM15NDEUOPE" header="Operacion" :sortable="true">
-        </Column>
+        ></Column>
         <Column field="TM07SCOSDES" header="Cosecha" :sortable="true"></Column>
+        <Column field="MONEDADEUDA" header="Cosecha" :sortable="true"></Column>
         <Column
           field="TM15NDEUCAPINI"
           header="Saldo Capital"
@@ -187,11 +175,9 @@
 <script>
 import Calendar from "primevue/calendar";
 import DataTable from "primevue/datatable";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
+import axios from "axios";
 import moment from "moment";
-import ReporteGeneralService from "../service/ReporteGeneralService";
-import Utils from "../utils/Ultils";
-// import { reactive } from 'vue'
 export default {
   components: {
     Calendar,
@@ -204,34 +190,17 @@ export default {
       maxDate: null,
       loading: false,
       citas: null,
-      allCitas: null,
-      totalRecords: 0,
-      filters: {
-        documento: { value: null, matchMode: FilterMatchMode.CONTAINS }
-      },
-      mapByPage: new Map(),
+      filters: null,
     };
   },
-  ReporteGeneralService: null,
-  Utils: null,
   created() {
     let today = new Date();
-    this.minDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.minDate = new Date(today.getFullYear(), today.getMonth() -1, 1);
     this.maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    this.ReporteGeneralService = new ReporteGeneralService();
-    this.Utils = new Utils();
-    //this.mapByPage = reactive(new Map());
+
+    this.initFilters1();
   },
   mounted() {
-    this.loading = false;
-    this.lazyParams = {
-      first: 0,
-      rows: this.$refs.dt.rows,
-      sortField: null,
-      sortOrder: null,
-      filters: this.filters,
-    };
-    //  this.getCitas();
   },
   methods: {
     getCitas() {
@@ -242,52 +211,33 @@ export default {
       var date2 = $vue.date3 != null ? $vue.date3[1] : $vue.maxDate;
       var formattedDate = moment(date1).format("YYYY-MM-DD");
       var formattedDateFin = moment(date2).format("YYYY-MM-DD");
-
-      this.ReporteGeneralService.getCitas(
-        formattedDate,
-        formattedDateFin,
-        "fnunez"
-      ).then((data) => {
-        this.allCitas = data.data;
-        this.Utils.setMap(this.allCitas, this.lazyParams.rows, this.mapByPage);
-        this.getLazy(0);
-        this.totalRecords = this.allCitas.length;
-        this.loading = false;
-      });
-    },
-    getLazy(page) {
-      this.citas = this.mapByPage.get(page);
+      axios
+        .get(
+          "/api/listarCitas?dini=" +
+            formattedDate +
+            "&dfin=" +
+            formattedDateFin +
+            "&txtusuario=fnunez"
+        )
+        .then((data) => {
+          this.citas = data.data.data;
+          this.loading = false;
+        });
     },
     clearFilter1() {
       this.initFilters1();
     },
     initFilters1() {
       this.filters = {
-        usuario: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        moneda: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        fechaFinGest: { value: null, matchMode: FilterMatchMode.BETWEEN },
-        fechaIniGest: { value: null, matchMode: FilterMatchMode.BETWEEN },
+        'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
+        'DOCUMENTO':{operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+        'TM15NDEUOPE': { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'GESTORGESTION': { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'VGESTOR': { value: null, matchMode: FilterMatchMode.CONTAINS },
       };
     },
     exportCSV() {
       this.$refs.dt.exportCSV();
-    },
-    onPage(event) {
-      if (this.lazyParams.rows != event.rows) {
-        this.Utils.setMap(this.allCitas, event.rows, this.mapByPage);
-      }
-      this.lazyParams = event;
-      this.getLazy(this.lazyParams.page);
-    },
-    onSort(event) {
-      this.lazyParams = event;
-      console.log(this.lazyParams.filters);
-      this.getLazy(this.lazyParams.page);
-    },
-    onFilter() {
-      this.lazyParams.filters = this.filters;
-      console.log(this.lazyParams);
-      //  this.Utils.findByValue();
     },
   },
 };

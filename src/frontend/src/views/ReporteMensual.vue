@@ -39,10 +39,10 @@
         responsiveLayout="scroll"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         :globalFilterFields="[
-          'usuario',
-          'moneda',
-          'fechaIniGest',
-          'fechaFinGest',
+          'DOCUMENTO',
+          'TM15NDEUOPE',
+          'GESTORGESTION',
+          'VGESTOR',
         ]"
         sortMode="multiple"
         stripedRows
@@ -71,7 +71,11 @@
               <span class="p-input-icon-left">
                 <i class="pi pi-search" />
                 <InputText
-                  v-model="filters[('usuario', 'moneda')].value"
+                  v-model="
+                    filters[
+                      ('global')
+                    ].value
+                  "
                   placeholder="Buscar"
                 />
               </span>
@@ -81,11 +85,7 @@
         <template #empty> No existen datos </template>
         <template #loading> Cargando información. Por favor espere. </template>
         <!-- DOCUMENTO -->
-        <Column
-          field="usuario" 
-          header="Documento"
-          :sortable="true"
-        ></Column>
+        <Column field="DOCUMENTO" header="Documento" :sortable="true"></Column>
         <Column
           field="TM15NDEUOPE"
           header="Operacion"
@@ -99,24 +99,68 @@
           :sortable="true"
         ></Column>
         <Column field="NOMCAMPANA" header="Campaña" :sortable="true"></Column>
-        <Column field="TG01SGENDES_REACT" header="Reacción" :sortable="true"></Column>
+        <Column
+          field="TG01SGENDES_REACT"
+          header="Reacción"
+          :sortable="true"
+        ></Column>
         <Column
           field="TG01SGENDES_CONT"
           header="Tipo Contacto"
           :sortable="true"
         ></Column>
-        <Column field="VSUPERVISOR" header="Supervisor" :sortable="true"></Column>
+        <Column
+          field="VSUPERVISOR"
+          header="Supervisor"
+          :sortable="true"
+        ></Column>
         <Column field="VGESTOR" header="Gestor" :sortable="true"></Column>
         <Column field="NIVEL" header="Nivel" :sortable="true"></Column>
-        <Column field="GESTORGESTION" header="Usuario Gestión" :sortable="true"></Column>
-        <Column field="TM09SDTCVAL_TEL" header="Teléfono" :sortable="true"></Column>
-        <Column field="TT01DGESFEC" header="Fecha Gestión" :sortable="true"></Column>
-        <Column field="TT01DGESCIT" header="Fecha Cita" :sortable="true"></Column>
-        <Column field="CALIFICACION" header="Calificación" :sortable="true"></Column>
-        <Column field="TT03NMONTOTOTPAGO_MES" header="Pago del Mes" :sortable="true"></Column>
-        <Column field="TG01SGENDES_SIT_NEG" header="Situación de Ult. Negociación" :sortable="true"></Column>
-        <Column field="INTENSIDAD" header="Intensidad" :sortable="true"></Column>
-        <Column field="FRECUENCIA" header="Frecuencia" :sortable="true"></Column>
+        <Column
+          field="GESTORGESTION"
+          header="Usuario Gestión"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="TM09SDTCVAL_TEL"
+          header="Teléfono"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="TT01DGESFEC"
+          header="Fecha Gestión"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="TT01DGESCIT"
+          header="Fecha Cita"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="CALIFICACION"
+          header="Calificación"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="TT03NMONTOTOTPAGO_MES"
+          header="Pago del Mes"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="TG01SGENDES_SIT_NEG"
+          header="Situación de Ult. Negociación"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="INTENSIDAD"
+          header="Intensidad"
+          :sortable="true"
+        ></Column>
+        <Column
+          field="FRECUENCIA"
+          header="Frecuencia"
+          :sortable="true"
+        ></Column>
         <template #paginatorLeft>
           <Button type="button" icon="pi pi-refresh" class="p-button-text" />
         </template>
@@ -131,7 +175,7 @@
 <script>
 import Calendar from "primevue/calendar";
 import DataTable from "primevue/datatable";
-import { FilterMatchMode } from "primevue/api";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
 import axios from "axios";
 import moment from "moment";
 export default {
@@ -144,14 +188,9 @@ export default {
       date3: null,
       minDate: null,
       maxDate: null,
-      loading: true,
+      loading: false,
       citas: null,
-      filters: {
-        usuario: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        moneda: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        fechaFinGest: { value: null, matchMode: FilterMatchMode.BETWEEN },
-        fechaIniGest: { value: null, matchMode: FilterMatchMode.BETWEEN },
-      },
+      filters: null,
     };
   },
   created() {
@@ -159,50 +198,46 @@ export default {
     this.minDate = new Date(today.getFullYear(), today.getMonth(), 1);
     this.maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-    console.log(this.minDate);
-    console.log(this.maxDate);
+    this.initFilters1();
   },
   mounted() {
-    this.loading = true;
-    this.getCitas();
   },
   methods: {
     getCitas() {
       let $vue = this;
       $vue.loading = true;
-      console.log($vue.date3);
       var date1 = $vue.date3 != null ? $vue.date3[0] : $vue.minDate;
       var date2 = $vue.date3 != null ? $vue.date3[1] : $vue.maxDate;
       var formattedDate = moment(date1).format("YYYY-MM-DD");
       var formattedDateFin = moment(date2).format("YYYY-MM-DD");
-      console.log(formattedDate);
-        axios
-          .get(
-            "/api/listarCitas?dini=" +
-              formattedDate +
-              "&dfin=" +
-              formattedDateFin +
-              "&txtusuario=fnunez"
-          )
-          .then((data) => {
-            this.citas = data.data.data;
-            this.loading = false;
-          });
+      axios
+        .get(
+          "/api/listarCitas?dini=" +
+            formattedDate +
+            "&dfin=" +
+            formattedDateFin +
+            "&txtusuario=fnunez"
+        )
+        .then((data) => {
+          this.citas = data.data.data;
+          this.loading = false;
+        });
     },
     clearFilter1() {
       this.initFilters1();
     },
     initFilters1() {
       this.filters = {
-        usuario: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        moneda: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        fechaFinGest: { value: null, matchMode: FilterMatchMode.BETWEEN },
-        fechaIniGest: { value: null, matchMode: FilterMatchMode.BETWEEN },
+        'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
+        'DOCUMENTO':{operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.EQUALS}]},
+        'TM15NDEUOPE': { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'GESTORGESTION': { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'VGESTOR': { value: null, matchMode: FilterMatchMode.CONTAINS },
       };
     },
     exportCSV() {
       this.$refs.dt.exportCSV();
-    }
+    },
   },
 };
 </script>

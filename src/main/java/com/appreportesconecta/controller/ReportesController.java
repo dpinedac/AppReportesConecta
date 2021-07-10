@@ -26,84 +26,81 @@ import com.appreportesconecta.services.TT_CitasTelPreService;
 @RequestMapping(value = "/api")
 public class ReportesController {
 
-    private static final Log LOG = LogFactory.getLog(ReportesController.class);
+	private static final Log LOG = LogFactory.getLog(ReportesController.class);
 
-    @Autowired
-    @Qualifier("tt_CitasTelPreServiceImpl")
-    private TT_CitasTelPreService tt_CitasTelPreService;
+	@Autowired
+	@Qualifier("tt_CitasTelPreServiceImpl")
+	private TT_CitasTelPreService tt_CitasTelPreService;
 
-    @Autowired
-    @Qualifier("tm_UsuarioServiceImpl")
-    private TM_UsuarioService tm_UsuarioService;
+	@Autowired
+	@Qualifier("tm_UsuarioServiceImpl")
+	private TM_UsuarioService tm_UsuarioService;
 
-    @Autowired
-    private TT_Citas_Component tt_citas_component;
+	@Autowired
+	private TT_Citas_Component tt_citas_component;
 
-    @GetMapping("/")
-    public String principalTemplate() {
-        return "citas";
-    }
+	@GetMapping("/")
+	public String principalTemplate() {
+		return "citas";
+	}
 
-    @RequestMapping(value = "/lockview", method = RequestMethod.GET)
-    public String lockscreen() {
-        return "lockscreen";
-    }
+	@RequestMapping(value = "/lockview", method = RequestMethod.GET)
+	public String lockscreen() {
+		return "lockscreen";
+	}
 
-    @GetMapping(value = "/citas")
-    public ModelAndView citasView() {
-        ModelAndView mavcitas = new ModelAndView("citas");
-        return mavcitas;
-    }
+	@GetMapping(value = "/citas")
+	public ModelAndView citasView() {
+		ModelAndView mavcitas = new ModelAndView("citas");
+		return mavcitas;
+	}
 
-    @GetMapping(value = "/citasusuario/{usu}")
-    public JsonResponse citasUsuarioView(@PathVariable(name = "usu", required = true) String usuario) {
-       
-       
-        JsonResponse response = new JsonResponse();
-        TM_Usuario tm_usuario = null;// tm_UsuarioService.listarUsuario(usuario);
-        if (tm_usuario == null) {
-          
-        } else {
-            tm_usuario.setTM05SUSRNAM(usuario);
-            tm_usuario.setTM04SROLDES("Gestor (GES)");
-        }
-        LOG.info("Entre ");
-        response.setData(tm_usuario);
-        return response;
-    }
+	@GetMapping(value = "/citasusuario/{usu}")
+	public JsonResponse citasUsuarioView(@PathVariable(name = "usu", required = true) String usuario) {
 
-    @GetMapping(value = "/obtenercitasfrm")
-    public String listarReporte() {
-        return "citas";
-    }
+		JsonResponse response = new JsonResponse();
+		TM_Usuario tm_usuario = tm_UsuarioService.listarUsuario(usuario);
+		if (tm_usuario != null) {
+			tm_usuario.setTM05SUSRNAM(tm_usuario.getTM05SUSRNAM());
+			tm_usuario.setTM04SROLDES(tm_usuario.getTM04SROLDES());
+		}
+		LOG.info("Entre ");
+		response.setData(tm_usuario);
+		return response;
+	}
 
-    @ResponseBody
-    @RequestMapping(value = "/listarCitas", method = RequestMethod.GET, produces = "application/json")
-    public JsonResponse listarCitas(@RequestParam(name = "dini", required = false, defaultValue = "") String fechini,
-            @RequestParam(name = "dfin", required = false, defaultValue = "") String fechfin,
-            @RequestParam(name = "txtusuario") String usuario) {
-        List<TT_CitasTelPre> listCitas = null;//TT_CitasTelPre
+	@GetMapping(value = "/obtenercitasfrm")
+	public String listarReporte() {
+		return "citas";
+	}
 
-     //   TM_Usuario tm_usuario = tm_UsuarioService.listarUsuario(usuario);
-        JsonResponse response = new JsonResponse();
-        if (!fechini.equals("") && !fechfin.equals("")) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
-            String dateini = fechini;
-            String datefin = fechfin;
-            LOG.info("Entre {} {} " + fechini + fechfin);
-            LocalDate localDateIni = LocalDate.parse(dateini, formatter);
-            LocalDate localDateFin = LocalDate.parse(datefin, formatter);
-            LOG.info("Entre {} {} " + localDateIni + localDateFin);
-          //  if (tm_usuario.getTM04SROLDES().equals("Gestor (GES)") || 1==1) {
-                listCitas = tt_CitasTelPreService.find(); //tt_CitasTelPreService.selectByCitasTel(tm_usuario.getTM05SUSRNAM(), localDateIni, localDateFin);
-       //     } 
-//            else {
-//                listCitas = tt_CitasTelPreService.selectByCitasTel("", localDateIni, localDateFin);
-//            }
-        }
-        response.setData(listCitas);
-        return response;
-    }
+	@ResponseBody
+	@RequestMapping(value = "/listarCitas", method = RequestMethod.GET, produces = "application/json")
+	public JsonResponse listarCitas(@RequestParam(name = "dini", required = false, defaultValue = "") String fechini,
+			@RequestParam(name = "dfin", required = false, defaultValue = "") String fechfin,
+			@RequestParam(name = "txtusuario") String usuario) {
+		List<TT_CitasTelPre> listCitas = null;// TT_CitasTelPre
 
-    
+		TM_Usuario tm_usuario = tm_UsuarioService.listarUsuario(usuario);
+		JsonResponse response = new JsonResponse();
+		if (!fechini.equals("") && !fechfin.equals("")) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
+			String dateini = fechini;
+			String datefin = fechfin;
+			LOG.info("Entre {} {} " + fechini + fechfin);
+			LocalDate localDateIni = LocalDate.parse(dateini, formatter);
+			LocalDate localDateFin = LocalDate.parse(datefin, formatter);
+			LOG.info("Entre {} {} " + localDateIni + localDateFin);
+			if (tm_usuario.getTM04SROLDES().equals("Gestor (GES)")) {
+				listCitas = tt_CitasTelPreService.selectByCitasTel(tm_usuario.getTM05SUSRNAM(), localDateIni,
+						localDateFin);
+			} else {
+				listCitas = tt_CitasTelPreService.selectByCitasTel("", localDateIni, localDateFin);
+			}
+			LOG.info("SALIIIII {} {} " + localDateIni + localDateFin);
+		}
+		response.setData(listCitas);
+		return response;
+	}
+
 }
