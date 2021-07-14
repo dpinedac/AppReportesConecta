@@ -1,27 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
 
 const routes = [
+
   {
-    path: '/citasusuario/:usu',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/reporteGeneral',
-    name: 'ReporteGeneral',
+    path: '/error',
+    name: 'Error',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "reporteGeneral" */ '../views/ReporteGeneral.vue')
+    component: () => import(/* webpackChunkName: "reporteGeneral" */ '../views/Error.vue')
   },
   {
-    path: '/reporteMensual',
-    name: 'ReporteMensual',
+    path: '/reporteCitasTel',
+    name: 'ReporteCitasTel',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "reporteMensual" */ '../views/ReporteMensual.vue')
+    component: () => import(/* webpackChunkName: "reporteGeneral" */ '../views/ReporteCitasTel.vue')
+  },
+  {
+    path: '/ReporteAnalisisCartera',
+    name: 'ReporteAnalisisCartera',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "reporteMensual" */ '../views/ReporteAnalisisCartera.vue')
   },
   {
     path: '/graficoBar',

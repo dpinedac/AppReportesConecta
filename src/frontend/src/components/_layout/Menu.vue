@@ -1,39 +1,46 @@
 <template >
- 
-    <header
-      class="navbar navbar-white sticky-top bg-white flex-md-nowrap p-2 shadow"
-    >
-      <div class="pt-3 pb-3">
+  <header class="sticky-top bg-white flex-md-nowrap p-2 shadow">
+    <div class="row align-items-center">
+      <div class="pt-3 pb-3 col-md-1">
         <a class="menu-button" @click="visibleLeft = true"
           ><i class="pi pi-bars p-3"></i
         ></a>
-        <img src="/logo.svg" />
       </div>
-    </header>
-    <Sidebar v-model:visible="visibleLeft">
-      <TabMenu :model="items" />
-    </Sidebar><!--  -->
+      <div class="pt-3 pb-3 col-md-4">
+        <img src="/logo.svg" class="img-fluid" />
+      </div>
+      <div class="pt-3 pb-3 pl-3 col-md-7 text-end">
+        <Chip :label="user" image="avatar.png" />
+      </div>
+    </div>
+  </header>
+  <Sidebar v-model:visible="visibleLeft"> <TabMenu :model="items" /> </Sidebar
+  ><!--  -->
 </template>
 
 <script>
 import TabMenu from "primevue/tabmenu";
-import Sidebar from "primevue/sidebar"
+import Sidebar from "primevue/sidebar";
+import Cookies from "js-cookie";
+import Chip from "primevue/chip";
 export default {
   name: "MenuComponent",
-  components: { TabMenu,Sidebar },
+  components: { TabMenu, Sidebar, Chip },
   data() {
     return {
       visibleLeft: false,
+      user: "",
       items: [
-        { label: "Reporte General", icon: "pi pi-fw pi-home ", to: "/reporteGeneral" },
         {
-          label: "Reporte Mensual",
-          icon: "pi pi-fw pi-calendar",
-          to: "/reporteMensual",
+          label: "Reporte Citas Tel",
+          icon: "pi pi-fw pi-home ",
+          to: "/reporteCitasTel",
         },
-        { label: "Grafico Bar", icon: "pi pi-fw pi-pencil", to: "/graficoBar" }
       ],
     };
+  },
+  mounted() {
+    this.user = Cookies.get("user");
   },
   methods: {
     expandAll() {

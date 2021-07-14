@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class JsonResponse {
 
-    Object data;
-    
+	Object data;
+	boolean status;
 
 }

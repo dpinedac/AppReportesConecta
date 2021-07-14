@@ -6,7 +6,6 @@ export default class ReporteGeneralService {
         return axios.get("/api/listarCitas?dini=" +
             formattedDate +
             "&dfin=" +
-            formattedDateFin +
-            "&txtusuario="+user).then(res => res.data)
+            formattedDateFin ).then(res => res.data)
     }
 }
