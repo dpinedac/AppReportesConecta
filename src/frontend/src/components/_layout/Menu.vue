@@ -21,8 +21,8 @@
 <script>
 import TabMenu from "primevue/tabmenu";
 import Sidebar from "primevue/sidebar";
-import Cookies from "js-cookie";
 import Chip from "primevue/chip";
+import axios from "axios";
 export default {
   name: "MenuComponent",
   components: { TabMenu, Sidebar, Chip },
@@ -40,7 +40,17 @@ export default {
     };
   },
   mounted() {
-    this.user = Cookies.get("user");
+    console.log(this.userSession);
+     axios.get("/api/findSession").then((response) => {
+      if (response.data.status) {
+        var user = response.data.data.tm05SUSRNAM;
+        this.userSession = user;
+        console.log(this.userSession);
+        this.$router.push("/reporteCitasTel");
+      } else {
+        this.$router.push("/error");
+      }
+    });
   },
   methods: {
     expandAll() {

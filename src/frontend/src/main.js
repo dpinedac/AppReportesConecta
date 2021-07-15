@@ -13,10 +13,11 @@ import "primevue/resources/themes/saga-purple/theme.css"       //theme
 import "primevue/resources/primevue.min.css"                 //core css
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
-
 /* library.add(faPhone); */
+var app = createApp(App)
 
-createApp(App).use(router).use(router).use(PrimeVue)
+app.config.globalProperties.userSession = '';
+app.use(router).use(router).use(PrimeVue)
     .component("Button", Button).component("InputText", InputText)
     .component("Column", Column)
     .component("Panel", Panel)
