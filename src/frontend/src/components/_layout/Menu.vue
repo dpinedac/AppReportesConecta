@@ -39,12 +39,12 @@ export default {
       ],
     };
   },
-  mounted() {
+  created() {
     console.log(this.userSession);
      axios.get("/api/findSession").then((response) => {
       if (response.data.status) {
-        var user = response.data.data.tm05SUSRNAM;
-        this.userSession = user;
+        this.user = response.data.data.tm05SUSRNAM;
+        this.userSession = this.user;
         console.log(this.userSession);
         this.$router.push("/reporteCitasTel");
       } else {
