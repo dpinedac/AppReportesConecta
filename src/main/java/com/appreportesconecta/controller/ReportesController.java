@@ -84,8 +84,9 @@ public class ReportesController {
 		List<TT_CitasTelPre> listCitas = null;
 		while (listCitas == null) {
 			listCitas = tt_Citas_Component.findCitasPage(1);
-			LOG.info("SIGO EN BUCLE {}" + listCitas);
+			LOG.info("SIGO EN BUCLE ");
 		}
+		LOG.info("SALI EN BUCLE {}"+listCitas.size());
 		response.setData(listCitas);
 		// response.setData(listCitas);
 		return response;

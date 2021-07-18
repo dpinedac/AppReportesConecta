@@ -136,7 +136,6 @@ import DataTable from "primevue/datatable";
 import ReporteGeneralService from "../service/ReporteGeneralService";
 import Utils from "../utils/Ultils";
 import Tooltip from "primevue/tooltip";
-// import axios from "axios";
 import moment from "moment";
 import { PrimeIcons } from "primevue/api";
 export default {
@@ -146,7 +145,7 @@ export default {
   },
   directives: {
     tooltip: Tooltip,
-    primeIcons: PrimeIcons,
+    primeIcons: PrimeIcons
   },
   data() {
     return {
@@ -160,6 +159,7 @@ export default {
       totalRecords: 0,
       formattedDate: null,
       formattedDateFin: null,
+      habilitarExcel: true
     };
   },
   ReporteGeneralService: null,
@@ -188,7 +188,6 @@ export default {
     },
     getCitasAsync() {
       let $vue = this;
-      $vue.loading = true;
       var date1 = $vue.DaysSelect != null ? $vue.DaysSelect[0] : $vue.minDate;
       var date2 = $vue.DaysSelect != null ? $vue.DaysSelect[1] : $vue.maxDate;
 
@@ -196,17 +195,23 @@ export default {
         return;
       }
       $vue.loading = true;
+      $vue.habilitarExcel = false;
       this.formattedDate = moment(date1).format("YYYY-MM-DD");
       this.formattedDateFin = moment(date2).format("YYYY-MM-DD");
-      setTimeout(() => {
         this.ReporteGeneralService.getCitasAsync(
           this.formattedDate,
           this.formattedDateFin
         ).then((data) => {
           this.allCitas = data.data;
-           this.totalRecords = this.allCitas.length;
+            this.Utils.setMap(
+            this.allCitas,
+            this.lazyParams.rows,
+            this.mapByPage
+          );
+          this.getLazy(0);
+          this.totalRecords = this.allCitas.length;
+           $vue.habilitarExcel = true;
         });
-      }, Math.random() * 1000 + 250);
     },
     getCitas() {
       setTimeout(() => {
@@ -250,6 +255,10 @@ export default {
       this.citas = result;
     },
     exportExcel() {
+      if (!this.habilitarExcel) {
+        
+        this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', life: 3000});
+      }
       require.ensure([], () => {
         const {
           export_json_to_excel,
