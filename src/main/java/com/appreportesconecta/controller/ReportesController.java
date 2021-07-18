@@ -41,9 +41,12 @@ public class ReportesController {
 	@Qualifier("tm_UsuarioServiceImpl")
 	private TM_UsuarioService tm_UsuarioService;
 
+	@Autowired
+	TT_Citas_Component tt_Citas_Component;
+
 	@ResponseBody
-	@RequestMapping(value = "/listarCitas", method = RequestMethod.GET, produces = "application/json")
-	public JsonResponse listarCitas(@RequestParam(name = "dini", required = false, defaultValue = "") String fechini,
+	@RequestMapping(value = "/asyncListarCitas", method = RequestMethod.GET, produces = "application/json")
+	public JsonResponse asyncListarCitas(@RequestParam(name = "dini", required = false, defaultValue = "") String fechini,
 			@RequestParam(name = "dfin", required = false, defaultValue = "") String fechfin, HttpSession session) {
 		List<TT_CitasTelPre> listCitas = null;// TT_CitasTelPre
 		DataSession dataSession = (DataSession) session.getAttribute("USER");
@@ -64,8 +67,27 @@ public class ReportesController {
 						localDateFin);
 			}
 			LOG.info("SALIIIII {} {} {}" + localDateIni + localDateFin + listCitas.size());
+			tt_Citas_Component.setCitasTelPorPagina(listCitas, 100);
 		}
 		response.setData(listCitas);
+		// response.setData(listCitas);
+		return response;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/listarCitas", method = RequestMethod.GET, produces = "application/json")
+	public JsonResponse listarCitas(
+			@RequestParam(name = "dini", required = false, defaultValue = "") String fechini,
+			@RequestParam(name = "dfin", required = false, defaultValue = "") String fechfin, HttpSession session) {
+
+		JsonResponse response = new JsonResponse();
+		List<TT_CitasTelPre> listCitas = null;
+		while (listCitas == null) {
+			listCitas = tt_Citas_Component.findCitasPage(1);
+			LOG.info("SIGO EN BUCLE {}" + listCitas);
+		}
+		response.setData(listCitas);
+		// response.setData(listCitas);
 		return response;
 	}
 

@@ -21,7 +21,7 @@
         />
       </div>
       <div class="col-auto">
-        <Button label="Enviar" @click="getCitas()" />
+        <Button label="Enviar" @click="eventCitas()" />
       </div>
     </div>
 
@@ -35,7 +35,7 @@
         @page="onPage($event)"
         :rows="5"
         paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown "
-        :rowsPerPageOptions="[5,10, 20, 50]"
+        :rowsPerPageOptions="[5, 10, 20, 50]"
         responsiveLayout="scroll"
         currentPageReportTemplate="Del {first} al {last} de {totalRecords}"
         stripedRows
@@ -43,7 +43,7 @@
         :totalRecords="totalRecords"
         :lazy="true"
         scrollHeight="600px"
-       class="p-datatable-sm"
+        class="p-datatable-sm"
         rowHover
         :autoLayout="true"
       >
@@ -100,7 +100,11 @@
         <Column field="GESTORGESTION" header="Gestor Gestión"></Column>
         <Column field="TT01SGESOBS" header="Observación">
           <template #body="slotProps">
-            <i class="pi pi-info-circle "   style="fontSize: 2rem"  v-tooltip.top="slotProps.data.TT01SGESOBS"></i>
+            <i
+              class="pi pi-info-circle"
+              style="fontsize: 2rem"
+              v-tooltip.top="slotProps.data.TT01SGESOBS"
+            ></i>
           </template>
         </Column>
         <Column field="TM09SDTCVAL_TEL" header="Teléfono"></Column>
@@ -134,7 +138,7 @@ import Utils from "../utils/Ultils";
 import Tooltip from "primevue/tooltip";
 // import axios from "axios";
 import moment from "moment";
-import {PrimeIcons} from 'primevue/api';
+import { PrimeIcons } from "primevue/api";
 export default {
   components: {
     Calendar,
@@ -142,7 +146,7 @@ export default {
   },
   directives: {
     tooltip: Tooltip,
-    primeIcons : PrimeIcons
+    primeIcons: PrimeIcons,
   },
   data() {
     return {
@@ -154,6 +158,8 @@ export default {
       search: null,
       mapByPage: new Map(),
       totalRecords: 0,
+      formattedDate: null,
+      formattedDateFin: null,
     };
   },
   ReporteGeneralService: null,
@@ -176,22 +182,37 @@ export default {
     };
   },
   methods: {
-    getCitas() {
+    eventCitas(){
+      this.getCitasAsync();
+      this.getCitas();
+    },
+    getCitasAsync() {
       let $vue = this;
       $vue.loading = true;
       var date1 = $vue.DaysSelect != null ? $vue.DaysSelect[0] : $vue.minDate;
       var date2 = $vue.DaysSelect != null ? $vue.DaysSelect[1] : $vue.maxDate;
 
-      if (date1 == undefined || date2 == undefined ) {
+      if (date1 == undefined || date2 == undefined) {
         return;
       }
       $vue.loading = true;
-      var formattedDate = moment(date1).format("YYYY-MM-DD");
-      var formattedDateFin = moment(date2).format("YYYY-MM-DD");
+      this.formattedDate = moment(date1).format("YYYY-MM-DD");
+      this.formattedDateFin = moment(date2).format("YYYY-MM-DD");
+      setTimeout(() => {
+        this.ReporteGeneralService.getCitasAsync(
+          this.formattedDate,
+          this.formattedDateFin
+        ).then((data) => {
+          this.allCitas = data.data;
+           this.totalRecords = this.allCitas.length;
+        });
+      }, Math.random() * 1000 + 250);
+    },
+    getCitas() {
       setTimeout(() => {
         this.ReporteGeneralService.getCitas(
-          formattedDate,
-          formattedDateFin
+          this.formattedDate,
+          this.formattedDateFin
         ).then((data) => {
           this.allCitas = data.data;
           this.Utils.setMap(
@@ -218,7 +239,6 @@ export default {
       this.citas = this.mapByPage.get(page);
     },
     onPage(event) {
-    
       if (this.lazyParams.rows != event.rows) {
         this.Utils.setMap(this.allCitas, event.rows, this.mapByPage);
       }
