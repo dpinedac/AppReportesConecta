@@ -1,10 +1,15 @@
 <template class="container">
+  <Toast />
   <Panel>
-    <h3>Analisis de Cartera</h3>
+    <h3>Reporte Análisis Cartera</h3>
   </Panel>
 
   <Panel>
-    <div class="row text-center ml-3">
+    <div>
+      <h5>Buscar todos</h5>
+      <InputSwitch v-model="searchAll" />
+    </div>
+    <div class="row text-center ml-3 mt-3">
       <div class="col-md-3">
         <Calendar
           id="icon"
@@ -16,43 +21,40 @@
           :manualInput="false"
           dateFormat="dd/mm"
           panelClass="p-calendar"
-          placeholder="Elige un rango de fecha"
+          placeholder="Ingrese Fecha Gestión"
           class="col-md-12"
         />
       </div>
+
       <div class="col-auto">
-        <Button label="Enviar" @click="getCitas()" />
+        <Button label="Enviar" @click="getAnalisis()" />
       </div>
     </div>
 
-    <div class="mt-5 mb-5">
+    <div class="card mt-3">
       <DataTable
-        :value="citas"
+        :value="analisis"
         dataKey="id"
         :loading="loading"
         filterDisplay="menu"
         :paginator="true"
         @page="onPage($event)"
-        :rows="10"
-        paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        :rowsPerPageOptions="[10, 20, 50]"
+        :rows="5"
+        paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown "
+        :rowsPerPageOptions="[5, 10, 20, 50]"
         responsiveLayout="scroll"
-        currentPageReportTemplate="Viendo {first} al {last} de {totalRecords}"
+        currentPageReportTemplate="Del {first} al {last} de {totalRecords}"
         stripedRows
-        removableSort
         ref="dt"
         :totalRecords="totalRecords"
         :lazy="true"
+        scrollHeight="600px"
+        class="p-datatable-sm"
+        rowHover
+        :autoLayout="true"
       >
         <template #header>
           <div class="row g-3">
-            <div class="col-auto align-self-start">
-              <Button
-                icon="pi pi-external-link"
-                label="CSV"
-                @click="exportCSV($event)"
-              />
-            </div>
             <div class="col-auto align-self-start">
               <Button
                 icon="pi pi-external-link"
@@ -85,33 +87,60 @@
         <template #empty> No existen datos </template>
         <template #loading> Cargando información. Por favor espere. </template>
         <!-- DOCUMENTO -->
-        <Column field="DOCUMENTO" header="Documento"> </Column>
-        <Column field="TM15NDEUOPE" header="Operacion"></Column>
-        <Column field="TM07SCOSDES" header="Cosecha"></Column>
-        <Column field="MONEDADEUDA" header="Moneda"></Column>
-        <Column field="TM15NDEUCAPINI" header="Capital Inicial"></Column>
-        <Column field="NOMCAMPANA" header="Capital Inicial Soles"></Column>
-        <Column field="TG01SGENDES_REACT" header="Reacción"></Column>
-        <Column field="TG01SGENDES_CONT" header="Contacto"></Column>
-        <Column field="TG01SGENDES_TIPCONT_ABR" header="Tipo Contacto"></Column>
-        <Column field="CANAL" header="Canal"></Column>
+        <Column field="DOCUMENTO" header="Documento"></Column>
+        <Column field="VOPERACION" header="Nro de operación"></Column>
+        <Column field="TM08NCLIID" header="Codigo de Cliente"></Column>
+        <Column field="VUSUJEFE" header="Jefe de Canal"></Column>
+        <Column field="VCANALACT" header="Canal"></Column>
         <Column field="VSUPERVISOR" header="Supervisor"></Column>
         <Column field="VGESTOR" header="Gestor"></Column>
         <Column field="NIVEL" header="Nivel"></Column>
-        <Column field="GESTORGESTION" header="Gestor Gestión"></Column>
-        <Column field="TT01SGESOBS" header="Observación"></Column>
-        <Column field="TM09SDTCVAL_TEL" header="Teléfono"></Column>
-        <Column field="NOMCAMPANA" header="Campaña"></Column>
-        <Column field="TT01DGESFEC" header="Fecha Gestión"></Column>
-        <Column field="TT01DGESCIT" header="Fecha Cita"></Column>
-        <Column field="CALIFICACION" header="Calificación"></Column>
-        <Column field="TT03NMONTOTOTPAGO_MES" header="Monto Pago Mes"></Column>
+        <Column field="ANOMES" header="AñoMes"></Column>
+        <Column field="TM07SCOSDES" header="Cosecha"></Column>
+        <Column field="TM01SENTABV" header="Entidad"></Column>
+        <Column field="TM07DCOSVTA" header="Fecha de Cosecha"></Column>
+        <Column field="NOMBRES" header="Nombres"></Column>
+        <Column field="DIRECCION" header="Dirección"></Column>
+        <Column field="DEPARTAMENTO" header="Departamento"></Column>
+        <Column field="PROVINCIA" header="Provincia"></Column>
+        <Column field="DISTRITO" header="Distrito"></Column>
+        <Column field="MONEDA_DEUDA" header="Moneda de Deuda"></Column>
+        <Column field="TM15NDEUCAPINI" header="Capital Inicial"></Column>
         <Column
-          field="TG01SGENDES_ULT_SIT_NEG"
-          header="Ult. situación de Negociación"
+          field="TM15NDEUCAPINI_SOL"
+          header="Capital Inicial Soles "
         ></Column>
+        <Column field="DEUCAPACT" header="Capital Actual"></Column>
+        <Column field="DEUCAPACTSOL" header="Capital Actual Soles"></Column>
+        <Column field="TG01SGENDES_ACC" header="Acción"></Column>
+        <Column field="TG01SGENDES_REAC" header="Reacción"></Column>
+        <Column field="TG01SGENDES_CONT" header="Contacto"></Column>
+        <Column
+          field="TG01SGENDES_TIPCONT_ABR"
+          header="Tipo de Contacto"
+        ></Column>
+        <Column field="TT01DGESFEC" header="Fecha de Gestión"></Column>
+        <Column field="TM05SUSRNAM_GEST" header="Usuario Gestión"></Column>
+        <Column field="CALIFICACION" header="Calificación"></Column>
+        <Column field="TOTPAGDEU_MES" header="Pagos del Mes"></Column>
         <Column field="INTENSIDAD" header="Intensidad"></Column>
         <Column field="FRECUENCIA" header="Frecuencia"></Column>
+        <Column field="COBERTURA" header="Cobertura"></Column>
+        <Column
+          field="FECHACREACION_NEG"
+          header="Fecha de Creación Negociacion"
+        ></Column>
+        <Column field="MONTO_NEG" header="Monto de Negociación"></Column>
+        <Column
+          field="SITUACION_NEG"
+          header="Situación de Negociación"
+        ></Column>
+        <Column field="GESTOR_NEG" header="Gestor de negociación"></Column>
+        <Column
+          field="FECHVENCI_NEG"
+          header="Fecha de vencimiento de Negociacion"
+        ></Column>
+
         <template #paginatorLeft>
           <Button type="button" icon="pi pi-refresh" class="p-button-text" />
         </template>
@@ -126,178 +155,148 @@
 <script>
 import Calendar from "primevue/calendar";
 import DataTable from "primevue/datatable";
-import ReporteGeneralService from "../service/ReporteGeneralService";
-import Utils from "../utils/Ultils";
-// import axios from "axios";
+import ReporteAnalisisService from "../service/ReporteAnalisisService";
+import Tooltip from "primevue/tooltip";
 import moment from "moment";
-import Cookies from "js-cookie";
+import { PrimeIcons } from "primevue/api";
+import InputSwitch from "primevue/inputswitch";
 export default {
   components: {
     Calendar,
     DataTable,
+    InputSwitch,
+  },
+  directives: {
+    tooltip: Tooltip,
+    primeIcons: PrimeIcons,
   },
   data() {
     return {
-      DaysSelect: null,
+      DaysSelect: [],
       minDate: null,
       maxDate: null,
       loading: false,
-      citas: null,
+      analisis: null,
       search: null,
       mapByPage: new Map(),
       totalRecords: 0,
+      formattedDate: null,
+      formattedDateFin: null,
+      searchAll: false,
+      totalFilter: 0,
     };
   },
-  ReporteGeneralService: null,
-  Utils: null,
+  ReporteAnalisisService: null,
   created() {
     let today = new Date();
     this.minDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     this.maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    this.ReporteGeneralService = new ReporteGeneralService();
-    this.Utils = new Utils();
-
-    this.initFilters1();
+    this.ReporteAnalisisService = new ReporteAnalisisService();
   },
   mounted() {
     this.lazyParams = {
-      first: 0,
+      page: 0,
       rows: this.$refs.dt.rows,
-      sortField: null,
-      sortOrder: null,
     };
+    this.getAnalisis();
   },
   methods: {
-    getCitas() {
+    getAnalisis() {
       let $vue = this;
-      $vue.loading = true;
-      var date1 = $vue.DaysSelect != null ? $vue.DaysSelect[0] : $vue.minDate;
-      var date2 = $vue.DaysSelect != null ? $vue.DaysSelect[1] : $vue.maxDate;
-      var user = Cookies.get("user");
-      if (date1 == undefined || date2 == undefined || user == undefined) {
+
+      let today = new Date();
+      var date1 = new Date();
+      var date2 = today;
+      if ($vue.DaysSelect.length != 0) {
+        date1 = $vue.DaysSelect[0];
+        date2 = $vue.DaysSelect[1];
+      } else {
+        $vue.DaysSelect[0] = date1;
+        $vue.DaysSelect[1] = date2;
+      }
+      if (date1 == undefined || date2 == undefined) {
         return;
       }
       $vue.loading = true;
-      var formattedDate = moment(date1).format("YYYY-MM-DD");
-      var formattedDateFin = moment(date2).format("YYYY-MM-DD");
-      setTimeout(() => {
-        this.ReporteGeneralService.getCitas(
-          formattedDate,
-          formattedDateFin,
-          user
-        ).then((data) => {
-          this.allCitas = data.data;
-          this.Utils.setMap(
-            this.allCitas,
-            this.lazyParams.rows,
-            this.mapByPage
-          );
-          this.getLazy(0);
-          this.totalRecords = this.allCitas.length;
+      this.formattedDate = moment(date1).format("YYYY-MM-DD");
+      this.formattedDateFin = moment(date2).format("YYYY-MM-DD");
+
+      this.ReporteAnalisisService.getAnalisis(
+        this.formattedDate,
+        this.formattedDateFin,
+        this.searchAll,
+        this.lazyParams
+      ).then((res) => {
+        var data = res.data;
+        this.analisis = data.data;
+        this.totalRecords = data.totalRecords;
+        this.loading = false;
+      });
+    },
+    getAnalisisLazy() {
+      let $vue = this;
+       this.loading = true;
+      this.ReporteAnalisisService.getAnalisisLazy($vue.lazyParams).then(
+        (res) => {
+          var data = res.data;
+          this.analisis = data.data;
+          this.totalRecords =
+            data.totalFilter == null ? data.totalRecords : data.totalFilter;
           this.loading = false;
-        });
-      }, Math.random() * 1000 + 250);
+        }
+      );
     },
     clearFilter1() {
       this.initFilters1();
+      this.getCitasLazy();
     },
     initFilters1() {
       this.search = null;
-    },
-    exportCSV() {
-      this.$refs.dt.exportCSV();
-    },
-    getLazy(page) {
-      this.citas = this.mapByPage.get(page);
+      this.lazyParams.search = null;
     },
     onPage(event) {
-      console.log(event);
-      if (this.lazyParams.rows != event.rows) {
-        this.Utils.setMap(this.allCitas, event.rows, this.mapByPage);
-      }
       this.lazyParams = event;
-      this.getLazy(this.lazyParams.page);
+      this.lazyParams.search = this.search;
+      this.getAnalisisLazy();
     },
     onChange() {
-      console.log(this.search);
-      var result = this.Utils.findByValue(this.allCitas, this.search);
-      this.citas = result;
+      this.lazyParams.search = this.search;
+      this.getAnalisisLazy();
     },
     exportExcel() {
-      require.ensure([], () => {
-        const {
-          export_json_to_excel,
-        } = require("@/assets/excel/export2Excel.js");
-        const tHeader = [
-          "Documento",
-          "Operación",
-          "Cosecha",
-          "Moneda",
-          "Capital Inicial",
-          "Capital Inicial Soles",
-          "Reacción",
-          "Contacto",
-          "Tipo Contacto",
-          "Canal",
-          "Supervisor",
-          "Gestor",
-          "Nivel",
-          "Gestion Gestión",
-          "Observación",
-          "Teléfono",
-          "Campaña",
-          "Fecha de Gestión",
-          "Fecha de Cita",
-          "Calificación",
-          "Monto Pago Mes",
-          "Ultima Situación de Negociación",
-          "Intesidad",
-          "Frecuencia",
-        ];
-        // Set the title of the first row of the Excel table above
-        const filterVal = [
-          "DOCUMENTO",
-          "TM15NDEUOPE",
-          "TM07SCOSDES",
-          "MONEDADEUDA",
-          "TM15NDEUCAPINI",
-          "TM15NDEUCAPINI_SOL",
-          "TG01SGENDES_REACT",
-          "TG01SGENDES_CONT",
-          "TG01SGENDES_TIPCONT_ABR",
-          "CANAL",
-          "VSUPERVISOR",
-          "VGESTOR",
-          "NIVEL",
-          "GESTORGESTION",
-          "TT01SGESOBS",
-          "TM09SDTCVAL_TEL",
-          "NOMCAMPANA",
-          "TT01DGESFEC",
-          "TT01DGESCIT",
-          "CALIFICACION",
-          "TT03NMONTOTOTPAGO_MES",
-          "TG01SGENDES_ULT_SIT_NEG",
-          "INTENSIDAD",
-          "FRECUENCIA",
-        ];
-        const list = this.allCitas; //Save tableData in data to list
-        if (list == undefined || list.length == 0) {
-          return;
+      this.ReporteAnalisisService.downloadAnalisis(this.lazyParams).then(
+        (response) => {
+          console.log(response);
+          let disposition = response.headers["content-disposition"]; // Obtener contenido-disposición
+          let fileInfo = disposition
+            ? disposition.substr(disposition.indexOf("filename"))
+            : "";
+          let fileName = fileInfo ? fileInfo.split("=")[1] : "";
+          if (!fileName.substr(fileName.indexOf("."))) {
+            this.$notify({
+              título: "Prompt",
+              mensaje: "No hay datos que desee",
+              type: "error",
+            });
+            return;
+          }
+          // Procesando archivos de flujo binario
+          var blob = new Blob([response.data], {
+            type: "application/x-download;charset=utf-8",
+          });
+          var downloadElement = document.createElement("a");
+          var href = window.URL.createObjectURL(blob); // Crear enlace de descarga
+          downloadElement.href = href;
+          downloadElement.download = decodeURIComponent(
+            fileName.replace("_", "")
+          );
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); // haga clic para descargar
+          document.body.removeChild(downloadElement); // Elimina el elemento después de descargar
+          window.URL.revokeObjectURL(href);
         }
-        const data = this.formatJson(filterVal, list);
-        var day1 = moment(this.minDate).format("DD/MM");
-        var day2 = moment(this.maxDate).format("DD/MM");
-        export_json_to_excel(
-          tHeader,
-          data,
-          "Reporte Citas Tel " + day1 + " al " + day2
-        );
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map((v) => filterVal.map((j) => v[j]));
-    },
+      );
+    }
   },
 };
 </script>

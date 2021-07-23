@@ -8,6 +8,4 @@ com\appreportesconecta\AppreportesconectaApplication.class
 com\appreportesconecta\services\TM_UsuarioServiceImpl.class
 com\appreportesconecta\domain\TM_Usuario.class
 com\appreportesconecta\bean\JsonResponse.class
-com\appreportesconecta\services\TT_CitasTelPreServiceImpl.class
 com\appreportesconecta\domain\TT_CitasTelPre.class
-com\appreportesconecta\services\TT_CitasTelPreService.class

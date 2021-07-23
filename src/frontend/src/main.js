@@ -14,13 +14,16 @@ import "primevue/resources/primevue.min.css"                 //core css
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
 import ToastService from 'primevue/toastservice';
+import Toast from 'primevue/toast';
 /* library.add(faPhone); */
 var app = createApp(App)
 
-app.config.globalProperties.userSession = '';
+
+app.config.globalProperties.$userSession = {};
 app.use(router).use(router).use(PrimeVue).use(ToastService)
     .component("Button", Button).component("InputText", InputText)
     .component("Column", Column)
     .component("Panel", Panel)
     .component("Card", Card)
+    .component("Toast", Toast)
     .component("OrganizationChart", OrganizationChart).mount('#app')

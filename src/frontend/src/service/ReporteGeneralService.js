@@ -1,19 +1,19 @@
 import axios from 'axios'
 
-
 export default class ReporteGeneralService {
 
-    getCitas(formattedDate, formattedDateFin) {
-        return  axios.get("/api/listarCitas?dini=" +
-            formattedDate +
-            "&dfin=" +
-            formattedDateFin ).then(res => res.data)
+    getCitasLazy(dataTableLazy) {
+        return axios.post("/api/listarCitas", dataTableLazy).then(res => res)
     }
 
-   async getCitasAsync(formattedDate, formattedDateFin) {
-        return  axios.get("/api/asyncListarCitas?dini=" +
-            formattedDate +
-            "&dfin=" +
-            formattedDateFin ).then(res => res.data)
+    getCitas(formattedDate, formattedDateFin, searchFechaCita, dataTableLazy) {
+
+        return axios.post("/api/asyncListarCitas/" + formattedDate + "/" + formattedDateFin + "/" + searchFechaCita,
+            dataTableLazy).then(res =>
+                res)
+    }
+
+    downloadCitas(dataTableLazy) {
+        return axios.post("/api/downloadCitas", dataTableLazy,{responseType:'blob'}).then(res => res)
     }
 }

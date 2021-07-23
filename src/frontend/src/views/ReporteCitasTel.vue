@@ -1,10 +1,15 @@
 <template class="container">
+  <Toast />
   <Panel>
     <h3>Citas Telefónicas</h3>
   </Panel>
 
   <Panel>
-    <div class="row text-center ml-3">
+    <div>
+      <h5>Si desea buscar por Fecha de Gestión pulsa aquí:</h5>
+      <InputSwitch v-model="searchFechaGestion" />
+    </div>
+    <div class="row text-center ml-3 mt-3">
       <div class="col-md-3">
         <Calendar
           id="icon"
@@ -16,12 +21,17 @@
           :manualInput="false"
           dateFormat="dd/mm"
           panelClass="p-calendar"
-          placeholder="Elige un rango de fecha"
+          :placeholder="
+            searchFechaGestion
+              ? 'Seleccione Fecha Cita'
+              : 'Seleccione Fecha Gestión'
+          "
           class="col-md-12"
         />
       </div>
+
       <div class="col-auto">
-        <Button label="Enviar" @click="eventCitas()" />
+        <Button label="Enviar" @click="getCitas()" />
       </div>
     </div>
 
@@ -37,7 +47,7 @@
         paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown "
         :rowsPerPageOptions="[5, 10, 20, 50]"
         responsiveLayout="scroll"
-        currentPageReportTemplate="Del {first} al {last} de {totalRecords}"
+        currentPageReportTemplate=" Del {first} al {last} de {totalRecords}"
         stripedRows
         ref="dt"
         :totalRecords="totalRecords"
@@ -134,205 +144,146 @@
 import Calendar from "primevue/calendar";
 import DataTable from "primevue/datatable";
 import ReporteGeneralService from "../service/ReporteGeneralService";
-import Utils from "../utils/Ultils";
 import Tooltip from "primevue/tooltip";
 import moment from "moment";
 import { PrimeIcons } from "primevue/api";
+import InputSwitch from "primevue/inputswitch";
 export default {
   components: {
     Calendar,
     DataTable,
+    InputSwitch,
   },
   directives: {
     tooltip: Tooltip,
-    primeIcons: PrimeIcons
+    primeIcons: PrimeIcons,
   },
   data() {
     return {
-      DaysSelect: null,
+      DaysSelect: [],
       minDate: null,
       maxDate: null,
       loading: false,
       citas: null,
       search: null,
-      mapByPage: new Map(),
       totalRecords: 0,
       formattedDate: null,
       formattedDateFin: null,
-      habilitarExcel: true
+      searchFechaGestion: false,
+      totalFilter: 0,
     };
   },
   ReporteGeneralService: null,
-  Utils: null,
   created() {
     let today = new Date();
     this.minDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     this.maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     this.ReporteGeneralService = new ReporteGeneralService();
-    this.Utils = new Utils();
 
-    this.initFilters1();
   },
   mounted() {
     this.lazyParams = {
-      first: 0,
+      page: 0,
       rows: this.$refs.dt.rows,
-      sortField: null,
-      sortOrder: null,
     };
+    this.getCitas();
   },
   methods: {
-    eventCitas(){
-      this.getCitasAsync();
-      this.getCitas();
-    },
-    getCitasAsync() {
+    getCitas() {
       let $vue = this;
-      var date1 = $vue.DaysSelect != null ? $vue.DaysSelect[0] : $vue.minDate;
-      var date2 = $vue.DaysSelect != null ? $vue.DaysSelect[1] : $vue.maxDate;
+      let today = new Date();
+      var date1 = new Date(today.getFullYear(), today.getMonth(), 1);
+      var date2 = today;
+      if ($vue.DaysSelect.length != 0) {
+        date1 = $vue.DaysSelect[0];
+        date2 = $vue.DaysSelect[1];
+      } else {
+        $vue.DaysSelect[0] = date1;
+        $vue.DaysSelect[1] = date2;
+      }
 
       if (date1 == undefined || date2 == undefined) {
         return;
       }
+
       $vue.loading = true;
-      $vue.habilitarExcel = false;
       this.formattedDate = moment(date1).format("YYYY-MM-DD");
       this.formattedDateFin = moment(date2).format("YYYY-MM-DD");
-        this.ReporteGeneralService.getCitasAsync(
-          this.formattedDate,
-          this.formattedDateFin
-        ).then((data) => {
-          this.allCitas = data.data;
-            this.Utils.setMap(
-            this.allCitas,
-            this.lazyParams.rows,
-            this.mapByPage
-          );
-          this.getLazy(0);
-          this.totalRecords = this.allCitas.length;
-           $vue.habilitarExcel = true;
-        });
+
+      this.ReporteGeneralService.getCitas(
+        this.formattedDate,
+        this.formattedDateFin,
+        this.searchFechaGestion,
+        $vue.lazyParams
+      ).then((res) => {
+        var data = res.data;
+        this.citas = data.data;
+        this.totalRecords = data.totalRecords;
+        this.loading = false;
+      });
     },
-    getCitas() {
-      setTimeout(() => {
-        this.ReporteGeneralService.getCitas(
-          this.formattedDate,
-          this.formattedDateFin
-        ).then((data) => {
-          this.allCitas = data.data;
-          this.Utils.setMap(
-            this.allCitas,
-            this.lazyParams.rows,
-            this.mapByPage
-          );
-          this.getLazy(0);
-          this.totalRecords = this.allCitas.length;
-          this.loading = false;
-        });
-      }, Math.random() * 1000 + 250);
+    getCitasLazy() {
+      let $vue = this;
+      this.loading = true;
+      this.ReporteGeneralService.getCitasLazy($vue.lazyParams).then((res) => {
+        var data = res.data;
+        this.citas = data.data;
+        this.totalRecords =
+          data.totalFilter == null ? data.totalRecords : data.totalFilter;
+        this.loading = false;
+      });
     },
     clearFilter1() {
       this.initFilters1();
+      this.getCitasLazy();
     },
     initFilters1() {
       this.search = null;
-    },
-    exportCSV() {
-      this.$refs.dt.exportCSV();
-    },
-    getLazy(page) {
-      this.citas = this.mapByPage.get(page);
+      this.lazyParams.search = null;
     },
     onPage(event) {
-      if (this.lazyParams.rows != event.rows) {
-        this.Utils.setMap(this.allCitas, event.rows, this.mapByPage);
-      }
       this.lazyParams = event;
-      this.getLazy(this.lazyParams.page);
+      this.lazyParams.search = this.search;
+      this.getCitasLazy();
     },
     onChange() {
-      var result = this.Utils.findByValue(this.allCitas, this.search);
-      this.citas = result;
+      this.lazyParams.search = this.search;
+      this.getCitasLazy();
     },
     exportExcel() {
-      if (!this.habilitarExcel) {
-        
-        this.$toast.add({severity:'success', summary: 'Success Message', detail:'Order submitted', life: 3000});
-      }
-      require.ensure([], () => {
-        const {
-          export_json_to_excel,
-        } = require("@/assets/excel/export2Excel.js");
-        const tHeader = [
-          "Documento",
-          "Operación",
-          "Cosecha",
-          "Moneda",
-          "Capital Inicial",
-          "Capital Inicial Soles",
-          "Reacción",
-          "Contacto",
-          "Tipo Contacto",
-          "Canal",
-          "Supervisor",
-          "Gestor",
-          "Nivel",
-          "Gestion Gestión",
-          "Observación",
-          "Teléfono",
-          "Campaña",
-          "Fecha de Gestión",
-          "Fecha de Cita",
-          "Calificación",
-          "Monto Pago Mes",
-          "Ultima Situación de Negociación",
-          "Intesidad",
-          "Frecuencia",
-        ];
-        // Set the title of the first row of the Excel table above
-        const filterVal = [
-          "DOCUMENTO",
-          "TM15NDEUOPE",
-          "TM07SCOSDES",
-          "MONEDADEUDA",
-          "TM15NDEUCAPINI",
-          "TM15NDEUCAPINI_SOL",
-          "TG01SGENDES_REACT",
-          "TG01SGENDES_CONT",
-          "TG01SGENDES_TIPCONT_ABR",
-          "CANAL",
-          "VSUPERVISOR",
-          "VGESTOR",
-          "NIVEL",
-          "GESTORGESTION",
-          "TT01SGESOBS",
-          "TM09SDTCVAL_TEL",
-          "NOMCAMPANA",
-          "TT01DGESFEC",
-          "TT01DGESCIT",
-          "CALIFICACION",
-          "TT03NMONTOTOTPAGO_MES",
-          "TG01SGENDES_ULT_SIT_NEG",
-          "INTENSIDAD",
-          "FRECUENCIA",
-        ];
-        const list = this.allCitas; //Save tableData in data to list
-        if (list == undefined || list.length == 0) {
-          return;
+      this.ReporteGeneralService.downloadCitas(this.lazyParams).then(
+        (response) => {
+          console.log(response);
+          let disposition = response.headers["content-disposition"]; // Obtener contenido-disposición
+          let fileInfo = disposition
+            ? disposition.substr(disposition.indexOf("filename"))
+            : "";
+          let fileName = fileInfo ? fileInfo.split("=")[1] : "";
+          if (!fileName.substr(fileName.indexOf("."))) {
+            this.$notify({
+              título: "Prompt",
+              mensaje: "No hay datos que desee",
+              type: "error",
+            });
+            return;
+          }
+          // Procesando archivos de flujo binario
+          var blob = new Blob([response.data], {
+            type: "application/x-download;charset=utf-8",
+          });
+          var downloadElement = document.createElement("a");
+          var href = window.URL.createObjectURL(blob); // Crear enlace de descarga
+          downloadElement.href = href;
+          downloadElement.download = decodeURIComponent(
+            fileName.replace("_", "")
+          );
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); // haga clic para descargar
+          document.body.removeChild(downloadElement); // Elimina el elemento después de descargar
+          window.URL.revokeObjectURL(href);
         }
-        const data = this.formatJson(filterVal, list);
-        var day1 = moment(this.minDate).format("DD/MM");
-        var day2 = moment(this.maxDate).format("DD/MM");
-        export_json_to_excel(
-          tHeader,
-          data,
-          "Reporte Citas Tel " + day1 + " al " + day2
-        );
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map((v) => filterVal.map((j) => v[j]));
-    },
+      );
+    }
   },
 };
 </script>

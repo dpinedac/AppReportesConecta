@@ -1,24 +1,8 @@
 export default class Utils {
 
-    setMap(data, rows, map) {
-        var pagina = 0;
-        var cantXPage = rows;
-        var citases = [];
-        var cant = cantXPage;
-        data.forEach((tT_CitasTelPre) => {
-            if (cant == 0) {
-                cant = cantXPage;
-                citases = [];
-                pagina++;
-            }
-            citases.push(tT_CitasTelPre);
-            map.set(pagina, citases);
-            cant--;
-        });
-        return map;
-    }
 
-    findByValue(data, value) {
+
+    findAnalisisByValue(data, value) {
         value = value.trim().toLowerCase();
         if (value == null || data == undefined || data.length == 0) {
             return data;
@@ -26,13 +10,25 @@ export default class Utils {
 
         var result = data.filter(x =>
             x.DOCUMENTO.toString().match(value) ||
-            x.TM15NDEUOPE.toString().match(value) ||
-            x.TM07SCOSDES.toLowerCase().match(value) ||
-            x.MONEDADEUDA.toLowerCase().match(value) ||
-            x.VSUPERVISOR.toLowerCase().match(value) ||
-            x.VGESTOR.toLowerCase().match(value) ||
-            x.GESTORGESTION.toLowerCase().match(value) ||
-            x.CANAL.toLowerCase().match(value)
+            x.VOPERACION.toString().match(value) ||
+            x.VUSUJEFE.toString().match(value) ||
+            x.VCANALACT.toString().match(value) ||
+            x.VSUPERVISOR.toString().match(value) ||
+            x.VGESTOR.toString().match(value) ||
+            x.NIVEL.toString().match(value) ||
+            x.ANOMES.toString().match(value) ||
+            x.TM07SCOSDES.toString().match(value) ||
+            x.TM01SENTABV.toString().match(value) ||
+            x.DEPARTAMENTO.toString().match(value) ||
+            x.PROVINCIA.toString().match(value) ||
+            x.DISTRITO.toString().match(value) ||
+            x.TG01SGENDES_ACC.toString().match(value) ||
+            x.TG01SGENDES_REAC.toString().match(value) ||
+            x.TG01SGENDES_CONT.toString().match(value) ||
+            x.TG01SGENDES_TIPCONT_ABR.toString().match(value) ||
+            x.TM05SUSRNAM_GEST.toString().match(value) ||
+            x.CALIFICACION.toString().match(value) ||
+            x.COBERTURA.toString().match(value)            
         );
         return result;
     }

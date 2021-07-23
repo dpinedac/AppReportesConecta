@@ -10,7 +10,7 @@
         <img src="/logo.svg" class="img-fluid" />
       </div>
       <div class="pt-3 pb-3 pl-3 col-md-7 text-end">
-        <Chip :label="user" image="avatar.png" />
+        <Chip :label="user.tm05SUSRNAM" image="avatar.png" />
       </div>
     </div>
   </header>
@@ -36,17 +36,27 @@ export default {
           icon: "pi pi-fw pi-home ",
           to: "/reporteCitasTel",
         },
+        {
+          label: "Reporte análisis",
+          icon: "pi pi-fw pi-home ",
+          to: "/reporteAnalisisCartera",
+        },
       ],
     };
   },
   created() {
-    console.log(this.userSession);
-     axios.get("/api/findSession").then((response) => {
+    console.log(this.$userSession);
+    axios.get("/api/findSession").then((response) => {
       if (response.data.status) {
-        this.user = response.data.data.tm05SUSRNAM;
-        this.userSession = this.user;
-        console.log(this.userSession);
-        this.$router.push("/reporteCitasTel");
+        this.user = response.data.data;
+        this.$userSession = this.user;
+        var URLactual = window.location;
+        var url = URLactual.pathname;
+        if (url == "/") {
+          this.$router.push("/reporteCitasTel");
+        } else {
+          this.$router.push(url);
+        }
       } else {
         this.$router.push("/error");
       }
