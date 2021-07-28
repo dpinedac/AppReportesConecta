@@ -11,5 +11,5 @@ public class TT_Citas {
   LocalDate fechaFinGest;
   LocalDate fechaIniGest;
   String usuario;
-  String moneda;
+  String tipoRol;
 }

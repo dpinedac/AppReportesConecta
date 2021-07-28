@@ -14,7 +14,7 @@
 			 ON USUROL.TM05NUSRID = USU.TM05NUSRID
 		 INNER JOIN TM_ROLSEC AS ROL WITH (NOLOCK)
 			 ON ROL.TM04NROLID = USUROL.TM04NROLID
-		 WHERE ROL.TM04SROLDES IN ('ReporteCallAgente','ReporteCallJefatura','ReporteCallGeneral')
+		 WHERE ROL.TM04SROLDES IN ('ReporteCallAgente','ReporteCallJefatura','ReporteCallGeneral','ReporteCallSupervisor')
 		 AND USU.TM05SUSRNAM =  #{usuario,jdbcType=VARCHAR}  
 	</select>
 	

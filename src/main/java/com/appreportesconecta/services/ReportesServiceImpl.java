@@ -25,18 +25,19 @@ public class ReportesServiceImpl implements ReportesService {
 
 	@Override
 	public List<TT_CitasTelPre> selectByCitasTel(TM_Usuario tm_usuario, LocalDate fechaIniGest, LocalDate fechaFinGest,
-			Boolean searchFechaGestion) {
+			Boolean searchFechaGestion,Boolean searchAll) {
 
 		TT_Citas citas = new TT_Citas();
 		citas.setFechaFinGest(fechaFinGest);
 		citas.setFechaIniGest(fechaIniGest);
-		citas.setUsuario(tm_usuario.isJefatura() || tm_usuario.isRolGeneral() ? "" : tm_usuario.getTM05SUSRNAM());
-
+		citas.setUsuario(tm_usuario.isRolGeneral() || searchAll ? "" : tm_usuario.getTM05SUSRNAM());
+		citas.setTipoRol(tm_usuario.getTipoRol());
+		
 		List<TT_CitasTelPre> citasTelPres = new ArrayList<>();
 		if (searchFechaGestion) {
-			citasTelPres = citasTelPreMapper.selectByCitasTel(citas);
+			citasTelPres = citasTelPreMapper.selectCitasTel(citas);
 		} else {
-			citasTelPres = citasTelPreMapper.selectByCitasTelByFechaCita(citas);
+			citasTelPres = citasTelPreMapper.selectCitasTelByFechaCita(citas);
 		}
 		return citasTelPres;
 	}
@@ -47,7 +48,7 @@ public class ReportesServiceImpl implements ReportesService {
 		TT_Citas citas = new TT_Citas();
 		citas.setFechaFinGest(fechaFinGest);
 		citas.setFechaIniGest(fechaIniGest);
-		citas.setUsuario(tm_usuario.isRolGeneral() || tm_usuario.isJefatura() ? "" : tm_usuario.getTM05SUSRNAM());
+		citas.setUsuario(tm_usuario.isRolGeneral() || tm_usuario.isRolJefatura() ? "" : tm_usuario.getTM05SUSRNAM());
 		return analisisCarteraMapper.selectByCitasTel(citas);
 	}
 

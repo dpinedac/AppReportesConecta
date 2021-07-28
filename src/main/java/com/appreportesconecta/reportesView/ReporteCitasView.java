@@ -66,7 +66,7 @@ public class ReporteCitasView extends AbstractPOIExcelView {
 		SXSSFSheet sheet = (SXSSFSheet) wb.createSheet("Citas");
 		SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("es", "ES"));
 		this.createHeader(
-				"Documento|Operación|Cosecha|Moneda|Capital Inicial|Capital Inicial Soles|Reacción|Contacto|Tipo Contacto|Canal|Supervisor|Gestor|Nivel|Gestion Gestión|Observación|Teléfono|Campaña|Fecha de Gestión|Fecha de Cita|Calificación|Monto Pago Mes|Ultima Situación de Negociación|Intesidad|Frecuencia",
+				"Documento|Operación|Cosecha|Moneda|Capital Inicial|Capital Inicial Soles|Reacción|Contacto|Tipo Contacto|Canal|Supervisor|Gestor|Nivel|Gestion Gestión|Observación|Teléfono|Campaña|Fecha de Gestión|Fecha de Cita|Calificación|Monto Pago Mes|Ultima Situación de Negociación|Intesidad|Frecuencia|Resultado Acción Cita|Resultado Reacción Cita|Resultado Contacto Cita|Resultado Observación Cita|Resultado Telefono Cita",
 				2, sheet, wb);
 		Integer cont = 3;
 		for (TT_CitasTelPre cita : citas) {
@@ -94,9 +94,14 @@ public class ReporteCitasView extends AbstractPOIExcelView {
 			ExcelHelper.replaceVal(sheet, cont, 21, cita.getTG01SGENDES_ULT_SIT_NEG());
 			ExcelHelper.replaceVal(sheet, cont, 22, cita.getINTENSIDAD());
 			ExcelHelper.replaceVal(sheet, cont, 23, cita.getFRECUENCIA());
+			ExcelHelper.replaceVal(sheet, cont, 24, cita.getACCIONRESULCIT());
+			ExcelHelper.replaceVal(sheet, cont, 25, cita.getREACCIONRESULCIT());
+			ExcelHelper.replaceVal(sheet, cont, 26, cita.getCONTACTORESULTCIT());
+			ExcelHelper.replaceVal(sheet, cont, 27, cita.getOBSERVACIONRESULCIT());
+			ExcelHelper.replaceVal(sheet, cont, 28, cita.getTELEFONORESULCIT());
 			cont++;
 		}
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 29; i++) {
 			sheet.trackAllColumnsForAutoSizing();
 			sheet.autoSizeColumn(i);
 		}

@@ -33,6 +33,11 @@ public class TT_CitasTelPre {
 	public String TG01SGENDES_ULT_SIT_NEG;
 	public Integer INTENSIDAD;
 	public Integer FRECUENCIA;
+	public String ACCIONRESULCIT;
+	public String REACCIONRESULCIT;
+	public String CONTACTORESULTCIT;
+	public String OBSERVACIONRESULCIT;
+	public String TELEFONORESULCIT;
 	
 	
 

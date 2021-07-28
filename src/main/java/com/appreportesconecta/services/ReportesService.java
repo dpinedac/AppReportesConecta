@@ -10,7 +10,7 @@ import com.appreportesconecta.domain.TT_CitasTelPre;
 public interface ReportesService {
 
 	List<TT_CitasTelPre> selectByCitasTel(TM_Usuario tm_usuario, LocalDate fechaIniGest, LocalDate fechaFinGest,
-			Boolean searchFechaGestion);
+			Boolean searchFechaGestion,Boolean searchAll);
 
 	List<TT_AnalisisCartera> find(TM_Usuario tm_usuario, LocalDate localDateIni, LocalDate localDateFin,
 			Boolean searchAll);

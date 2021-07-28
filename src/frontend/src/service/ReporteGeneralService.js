@@ -6,9 +6,9 @@ export default class ReporteGeneralService {
         return axios.post("/api/listarCitas", dataTableLazy).then(res => res)
     }
 
-    getCitas(formattedDate, formattedDateFin, searchFechaCita, dataTableLazy) {
+    getCitas(formattedDate, formattedDateFin, searchFechaCita,searchAll, dataTableLazy) {
 
-        return axios.post("/api/asyncListarCitas/" + formattedDate + "/" + formattedDateFin + "/" + searchFechaCita,
+        return axios.post("/api/asyncListarCitas/" + formattedDate + "/" + formattedDateFin + "/" + searchFechaCita+"/"+searchAll,
             dataTableLazy).then(res =>
                 res)
     }

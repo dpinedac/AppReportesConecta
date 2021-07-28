@@ -28,7 +28,7 @@ import com.appreportesconecta.components.TT_AnalisCartera_Component;
 import com.appreportesconecta.components.TT_Citas_Component;
 import com.appreportesconecta.domain.TM_Usuario;
 import com.appreportesconecta.domain.TT_AnalisisCartera;
-import com.appreportesconecta.domain.TT_CitasTelPre; 
+import com.appreportesconecta.domain.TT_CitasTelPre;
 import com.appreportesconecta.domain.security.DataSession;
 import com.appreportesconecta.reportesView.ReporteCitasView;
 import com.appreportesconecta.services.ReportesService;
@@ -57,10 +57,11 @@ public class ReportesController {
 	ReporteCitasView reporteCitasView;
 
 	@ResponseBody
-	@RequestMapping(value = "/asyncListarCitas/{dini}/{dfin}/{searchFechaGestion}", method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(value = "/asyncListarCitas/{dini}/{dfin}/{searchFechaGestion}/{searchAll}", method = RequestMethod.POST, produces = "application/json")
 	public DataTableLazyResponse asyncListarCitas(@PathVariable(name = "dini", required = true) String fechini,
 			@PathVariable(name = "dfin", required = true) String fechfin,
 			@PathVariable(name = "searchFechaGestion", required = true) Boolean searchFechaGestion,
+			@PathVariable(name = "searchAll", required = true) Boolean searchAll,
 			@RequestBody DataTableLazy dataTableLazy, HttpSession session) {
 
 		DataTableLazyResponse response = new DataTableLazyResponse();
@@ -71,12 +72,10 @@ public class ReportesController {
 
 		LocalDate localDateIni = LocalDate.parse(fechini, formatter);
 		LocalDate localDateFin = LocalDate.parse(fechfin, formatter);
-		LOG.info("Entre {} {} " + localDateIni + localDateFin);
+		LOG.info("Entre  ");
 		List<TT_CitasTelPre> listCitas = reportesService.selectByCitasTel(tm_usuario, localDateIni, localDateFin,
-				searchFechaGestion);
-		Collections.sort(listCitas, (a, b) -> a.getTT01DGESCIT().compareTo(b.getTT01DGESCIT()));
-
-		LOG.info("SALIIIII {} {} {}" + localDateIni + localDateFin + listCitas.size());
+				searchFechaGestion, searchAll);
+		LOG.info("SALIIIII ");
 		tt_Citas_Component.setCitasTelPorPagina(listCitas, dataTableLazy);
 		response.setStatus(true);
 		response.setData(tt_Citas_Component.findCitasPage(dataTableLazy));
@@ -100,8 +99,8 @@ public class ReportesController {
 			response.setData(listCitas);
 			response.setStatus(true);
 			return response;
-		}else if(tt_Citas_Component.getRows() != dataTableLazy.getRows()) {
-			tt_Citas_Component.setCitasTelPorRows( dataTableLazy);
+		} else if (tt_Citas_Component.getRows() != dataTableLazy.getRows()) {
+			tt_Citas_Component.setCitasTelPorRows(dataTableLazy);
 		}
 		listCitas = tt_Citas_Component.findCitasPage(dataTableLazy);
 
@@ -162,8 +161,8 @@ public class ReportesController {
 			response.setData(listCitas);
 			response.setStatus(true);
 			return response;
-		}else if(tt_analisis_Component.getRows() != dataTableLazy.getRows()) {
-			tt_analisis_Component.setCitasTelPorRows( dataTableLazy);
+		} else if (tt_analisis_Component.getRows() != dataTableLazy.getRows()) {
+			tt_analisis_Component.setCitasTelPorRows(dataTableLazy);
 		}
 		listCitas = tt_analisis_Component.findAnalisisPage(dataTableLazy);
 

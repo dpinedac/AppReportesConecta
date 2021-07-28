@@ -10,6 +10,6 @@ import com.appreportesconecta.domain.TT_CitasTelPre;
 @Mapper
 public interface TT_CitasTelPreMapper {
 
-	List<TT_CitasTelPre> selectByCitasTel(TT_Citas citas);
-	List<TT_CitasTelPre> selectByCitasTelByFechaCita(TT_Citas citas);
+	List<TT_CitasTelPre> selectCitasTel(TT_Citas citas);
+	List<TT_CitasTelPre> selectCitasTelByFechaCita(TT_Citas citas);
 }

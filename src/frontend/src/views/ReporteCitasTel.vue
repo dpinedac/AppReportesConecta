@@ -6,8 +6,12 @@
 
   <Panel>
     <div>
-      <h5>Si desea buscar por Fecha de Gestión pulsa aquí:</h5>
+      <h5>{{textSearch}}</h5>
       <InputSwitch v-model="searchFechaGestion" />
+    </div>
+     <div v-if="user.rolJefatura">
+      <h5>Si desea buscar todos los registros pulsa aquí:</h5>
+      <InputSwitch v-model="searchAll" />
     </div>
     <div class="row text-center ml-3 mt-3">
       <div class="col-md-3">
@@ -129,6 +133,11 @@
         ></Column>
         <Column field="INTENSIDAD" header="Intensidad"></Column>
         <Column field="FRECUENCIA" header="Frecuencia"></Column>
+        <Column field="ACCIONRESULCIT" header="Resultado Acción Cita"></Column>
+        <Column field="REACCIONRESULCIT" header="Resultado Reacción Cita"></Column>
+        <Column field="CONTACTORESULTCIT" header="Resultado Contacto Cita"></Column>
+        <Column field="OBSERVACIONRESULCIT" header="Resultado Observación Cita"></Column>
+        <Column field="TELEFONORESULCIT" header="Resultado Telefono Cita"></Column>
         <template #paginatorLeft>
           <Button type="button" icon="pi pi-refresh" class="p-button-text" />
         </template>
@@ -148,6 +157,7 @@ import Tooltip from "primevue/tooltip";
 import moment from "moment";
 import { PrimeIcons } from "primevue/api";
 import InputSwitch from "primevue/inputswitch";
+import { getCurrentInstance } from 'vue';
 export default {
   components: {
     Calendar,
@@ -170,7 +180,10 @@ export default {
       formattedDate: null,
       formattedDateFin: null,
       searchFechaGestion: false,
+      searchAll: false,
       totalFilter: 0,
+      user:{},
+      textSearch:""
     };
   },
   ReporteGeneralService: null,
@@ -179,8 +192,12 @@ export default {
     this.minDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     this.maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     this.ReporteGeneralService = new ReporteGeneralService();
-
-  },
+    
+    const app =  getCurrentInstance();
+    this.user = app.appContext.config.globalProperties.$userSession;
+    this.textSearch = this.user.rolJefatura || this.user.rolGeneral ? "Si desea buscar por Fecha de Cita pulsa aquí:" : "Si desea buscar por Fecha de Gestión pulsa aquí:"
+   
+ },
   mounted() {
     this.lazyParams = {
       page: 0,
@@ -209,11 +226,12 @@ export default {
       $vue.loading = true;
       this.formattedDate = moment(date1).format("YYYY-MM-DD");
       this.formattedDateFin = moment(date2).format("YYYY-MM-DD");
-
+      var searchType = this.user.rolJefatura || this.user.rolGeneral ? !this.searchFechaGestion : this.searchFechaGestion;
       this.ReporteGeneralService.getCitas(
         this.formattedDate,
         this.formattedDateFin,
-        this.searchFechaGestion,
+        searchType,
+        this.searchAll,
         $vue.lazyParams
       ).then((res) => {
         var data = res.data;

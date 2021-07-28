@@ -23,13 +23,15 @@ import TabMenu from "primevue/tabmenu";
 import Sidebar from "primevue/sidebar";
 import Chip from "primevue/chip";
 import axios from "axios";
+
+import { getCurrentInstance } from "vue";
 export default {
   name: "MenuComponent",
   components: { TabMenu, Sidebar, Chip },
   data() {
     return {
       visibleLeft: false,
-      user: "",
+      user:{},
       items: [
         {
           label: "Reporte Citas Tel",
@@ -44,25 +46,29 @@ export default {
       ],
     };
   },
-  created() {
-    console.log(this.$userSession);
-    axios.get("/api/findSession").then((response) => {
-      if (response.data.status) {
-        this.user = response.data.data;
-        this.$userSession = this.user;
-        var URLactual = window.location;
-        var url = URLactual.pathname;
-        if (url == "/") {
-          this.$router.push("/reporteCitasTel");
-        } else {
-          this.$router.push(url);
-        }
-      } else {
-        this.$router.push("/error");
-      }
-    });
+  mounted() {
+    this.findUser();
   },
   methods: {
+    findUser() {
+      const app =  getCurrentInstance();
+      axios.get("/api/findSession").then((response) => {
+        if (response.data.status) {
+          app.appContext.config.globalProperties.$userSession = response.data.data;
+          this.user = app.appContext.config.globalProperties.$userSession;
+          console.log(app.appContext.config.globalProperties.$userSession);
+          var URLactual = window.location;
+          var url = URLactual.pathname;
+          if (url == "/") {
+            this.$router.push("/reporteCitasTel");
+          } else {
+            this.$router.push(url);
+          }
+        } else {
+          this.$router.push("/error");
+        }
+      });
+    },
     expandAll() {
       for (let node of this.items) {
         this.expandNode(node);
