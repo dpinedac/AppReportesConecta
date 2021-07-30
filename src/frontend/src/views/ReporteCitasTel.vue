@@ -6,10 +6,10 @@
 
   <Panel>
     <div>
-      <h5>{{textSearch}}</h5>
+      <h5>{{ textSearch }}</h5>
       <InputSwitch v-model="searchFechaGestion" />
     </div>
-     <div v-if="user.rolJefatura">
+    <div v-if="user.rolJefatura">
       <h5>Si desea buscar todos los registros pulsa aquí:</h5>
       <InputSwitch v-model="searchAll" />
     </div>
@@ -89,6 +89,10 @@
                 />
               </span>
             </div>
+            <div v-if="inproccess">
+              <h5>En proceso</h5>
+              <ProgressBar :value="proccess" />
+            </div>
           </div>
         </template>
 
@@ -134,10 +138,22 @@
         <Column field="INTENSIDAD" header="Intensidad"></Column>
         <Column field="FRECUENCIA" header="Frecuencia"></Column>
         <Column field="ACCIONRESULCIT" header="Resultado Acción Cita"></Column>
-        <Column field="REACCIONRESULCIT" header="Resultado Reacción Cita"></Column>
-        <Column field="CONTACTORESULTCIT" header="Resultado Contacto Cita"></Column>
-        <Column field="OBSERVACIONRESULCIT" header="Resultado Observación Cita"></Column>
-        <Column field="TELEFONORESULCIT" header="Resultado Telefono Cita"></Column>
+        <Column
+          field="REACCIONRESULCIT"
+          header="Resultado Reacción Cita"
+        ></Column>
+        <Column
+          field="CONTACTORESULTCIT"
+          header="Resultado Contacto Cita"
+        ></Column>
+        <Column
+          field="OBSERVACIONRESULCIT"
+          header="Resultado Observación Cita"
+        ></Column>
+        <Column
+          field="TELEFONORESULCIT"
+          header="Resultado Telefono Cita"
+        ></Column>
         <template #paginatorLeft>
           <Button type="button" icon="pi pi-refresh" class="p-button-text" />
         </template>
@@ -157,12 +173,14 @@ import Tooltip from "primevue/tooltip";
 import moment from "moment";
 import { PrimeIcons } from "primevue/api";
 import InputSwitch from "primevue/inputswitch";
-import { getCurrentInstance } from 'vue';
+import ProgressBar from 'primevue/progressbar';
+import { getCurrentInstance } from "vue";
 export default {
   components: {
     Calendar,
     DataTable,
     InputSwitch,
+    ProgressBar
   },
   directives: {
     tooltip: Tooltip,
@@ -182,8 +200,11 @@ export default {
       searchFechaGestion: false,
       searchAll: false,
       totalFilter: 0,
-      user:{},
-      textSearch:""
+      user: {},
+      textSearch: "",
+      inproccess: false,
+      proccess: 0,
+      interval: null,
     };
   },
   ReporteGeneralService: null,
@@ -192,12 +213,14 @@ export default {
     this.minDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     this.maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     this.ReporteGeneralService = new ReporteGeneralService();
-    
-    const app =  getCurrentInstance();
+
+    const app = getCurrentInstance();
     this.user = app.appContext.config.globalProperties.$userSession;
-    this.textSearch = this.user.rolJefatura || this.user.rolGeneral ? "Si desea buscar por Fecha de Cita pulsa aquí:" : "Si desea buscar por Fecha de Gestión pulsa aquí:"
-   
- },
+    this.textSearch =
+      this.user.rolJefatura || this.user.rolGeneral
+        ? "Si desea buscar por Fecha de Cita pulsa aquí:"
+        : "Si desea buscar por Fecha de Gestión pulsa aquí:";
+  },
   mounted() {
     this.lazyParams = {
       page: 0,
@@ -211,6 +234,8 @@ export default {
       let today = new Date();
       var date1 = new Date(today.getFullYear(), today.getMonth(), 1);
       var date2 = today;
+      $vue.inproccess = true;
+      this.startProgress();
       if ($vue.DaysSelect.length != 0) {
         date1 = $vue.DaysSelect[0];
         date2 = $vue.DaysSelect[1];
@@ -226,7 +251,10 @@ export default {
       $vue.loading = true;
       this.formattedDate = moment(date1).format("YYYY-MM-DD");
       this.formattedDateFin = moment(date2).format("YYYY-MM-DD");
-      var searchType = this.user.rolJefatura || this.user.rolGeneral ? !this.searchFechaGestion : this.searchFechaGestion;
+      var searchType =
+        this.user.rolJefatura || this.user.rolGeneral
+          ? !this.searchFechaGestion
+          : this.searchFechaGestion;
       this.ReporteGeneralService.getCitas(
         this.formattedDate,
         this.formattedDateFin,
@@ -238,6 +266,8 @@ export default {
         this.citas = data.data;
         this.totalRecords = data.totalRecords;
         this.loading = false;
+        this.endProgress();
+         $vue.inproccess = false;
       });
     },
     getCitasLazy() {
@@ -301,7 +331,20 @@ export default {
           window.URL.revokeObjectURL(href);
         }
       );
-    }
+    },
+    startProgress() {
+      this.interval = setInterval(() => {
+        let newValue = this.proccess + Math.floor(Math.random() * 10) + 1;
+        if (newValue >= 100) {
+          newValue = 100;
+        }
+        this.proccess = newValue;
+      }, 2000);
+    },
+    endProgress() {
+      clearInterval(this.interval);
+      this.interval = null;
+    },
   },
 };
 </script>
