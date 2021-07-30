@@ -173,14 +173,14 @@ import Tooltip from "primevue/tooltip";
 import moment from "moment";
 import { PrimeIcons } from "primevue/api";
 import InputSwitch from "primevue/inputswitch";
-import ProgressBar from 'primevue/progressbar';
+import ProgressBar from "primevue/progressbar";
 import { getCurrentInstance } from "vue";
 export default {
   components: {
     Calendar,
     DataTable,
     InputSwitch,
-    ProgressBar
+    ProgressBar,
   },
   directives: {
     tooltip: Tooltip,
@@ -267,7 +267,7 @@ export default {
         this.totalRecords = data.totalRecords;
         this.loading = false;
         this.endProgress();
-         $vue.inproccess = false;
+        $vue.inproccess = false;
       });
     },
     getCitasLazy() {
@@ -334,16 +334,23 @@ export default {
     },
     startProgress() {
       this.interval = setInterval(() => {
-        let newValue = this.proccess + Math.floor(Math.random() * 10) + 1;
-        if (newValue >= 100) {
-          newValue = 100;
+        let newValue = 0
+        if (this.proccess >= 50) {
+           newValue = this.proccess + 1;
+        } else {
+           newValue = this.proccess + Math.floor(Math.random() * 10) + 1;
+          if (newValue >= 100) {
+            newValue = 100;
+          }
         }
+
         this.proccess = newValue;
       }, 2000);
     },
     endProgress() {
       clearInterval(this.interval);
       this.interval = null;
+      this.proccess = 0
     },
   },
 };
