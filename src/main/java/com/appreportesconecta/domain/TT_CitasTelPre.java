@@ -19,6 +19,7 @@ public class TT_CitasTelPre {
 	public String TG01SGENDES_CONT;
 	public String TG01SGENDES_TIPCONT_ABR;
 	public String CANAL;
+	public String VUSUJEFE;
 	public String VSUPERVISOR;
 	public String VGESTOR;
 	public String NIVEL;

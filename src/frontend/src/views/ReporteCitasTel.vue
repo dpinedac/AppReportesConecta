@@ -112,6 +112,7 @@
         <Column field="TG01SGENDES_CONT" header="Contacto"></Column>
         <Column field="TG01SGENDES_TIPCONT_ABR" header="Tipo Contacto"></Column>
         <Column field="CANAL" header="Canal"></Column>
+        <Column field="VUSUJEFE" header="Jefe de Canal"></Column>
         <Column field="VSUPERVISOR" header="Supervisor"></Column>
         <Column field="VGESTOR" header="Gestor"></Column>
         <Column field="NIVEL" header="Nivel"></Column>

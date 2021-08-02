@@ -135,17 +135,19 @@ public class TT_Citas_Component {
 	}
 
 	public synchronized List<TT_CitasTelPre> find(String value) {
-
+		System.out.println(value);
 		return this.citasTelPre.stream().filter(x -> x.getDOCUMENTO().toString().startsWith(value)
 				|| x.getTM15NDEUOPE().toString().startsWith(value) || x.getTM07SCOSDES().toString().startsWith(value)
-				|| x.getMONEDADEUDA().toString().startsWith(value) || x.getVSUPERVISOR().toString().startsWith(value)
+				|| x.getMONEDADEUDA().toString().startsWith(value) || x.getVSUPERVISOR().toString().startsWith(value) || x.getVUSUJEFE().toString().startsWith(value)
 				|| x.getVGESTOR().toString().startsWith(value) || x.getGESTORGESTION().toString().startsWith(value)
 				|| x.getCANAL().toString().startsWith(value) || x.getTT01DGESCIT().toString().startsWith(value)
-				|| x.getTG01SGENDES_ULT_SIT_NEG() == null ? false :x.getTG01SGENDES_ULT_SIT_NEG().toString().startsWith(value) || x.getINTENSIDAD().toString().startsWith(value)
-				|| x.getFRECUENCIA().toString().startsWith(value) || x.getACCIONRESULCIT()==null? false : x.getACCIONRESULCIT().toString().startsWith(value)
-				|| x.getREACCIONRESULCIT() == null ? false:  x.getREACCIONRESULCIT().toString().startsWith(value) || x.getCONTACTORESULTCIT() == null ? false :x.getCONTACTORESULTCIT().toString().startsWith(value)
-				||  x.getTELEFONORESULCIT() == null ? false : x.getTELEFONORESULCIT().toString().startsWith(value) 
-				)
+				|| (x.getTG01SGENDES_ULT_SIT_NEG() == null ? false
+						: x.getTG01SGENDES_ULT_SIT_NEG().toString().startsWith(value))
+				|| x.getINTENSIDAD().toString().startsWith(value) || x.getFRECUENCIA().toString().startsWith(value)
+				|| (x.getACCIONRESULCIT() == null ? false : x.getACCIONRESULCIT().toString().startsWith(value))
+				|| (x.getREACCIONRESULCIT() == null ? false : x.getREACCIONRESULCIT().toString().startsWith(value))
+				|| (x.getCONTACTORESULTCIT() == null ? false : x.getCONTACTORESULTCIT().toString().startsWith(value))
+				|| (x.getTELEFONORESULCIT() == null ? false : x.getTELEFONORESULCIT().toString().startsWith(value)))
 				.collect(Collectors.toList());
 	}
 

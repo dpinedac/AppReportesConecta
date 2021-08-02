@@ -66,7 +66,7 @@ public class ReporteCitasView extends AbstractPOIExcelView {
 		SXSSFSheet sheet = (SXSSFSheet) wb.createSheet("Citas");
 		SimpleDateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", new Locale("es", "ES"));
 		this.createHeader(
-				"Documento|Operación|Cosecha|Moneda|Capital Inicial|Capital Inicial Soles|Reacción|Contacto|Tipo Contacto|Canal|Supervisor|Gestor|Nivel|Gestion Gestión|Observación|Teléfono|Campaña|Fecha de Gestión|Fecha de Cita|Calificación|Monto Pago Mes|Ultima Situación de Negociación|Intesidad|Frecuencia|Resultado Acción Cita|Resultado Reacción Cita|Resultado Contacto Cita|Resultado Observación Cita|Resultado Telefono Cita",
+				"Documento|Operación|Cosecha|Moneda|Capital Inicial|Capital Inicial Soles|Reacción|Contacto|Tipo Contacto|Canal|Jefe de Canal|Supervisor|Gestor|Nivel|Gestion Gestión|Observación|Teléfono|Campaña|Fecha de Gestión|Fecha de Cita|Calificación|Monto Pago Mes|Ultima Situación de Negociación|Intesidad|Frecuencia|Resultado Acción Cita|Resultado Reacción Cita|Resultado Contacto Cita|Resultado Observación Cita|Resultado Telefono Cita",
 				2, sheet, wb);
 		Integer cont = 3;
 		for (TT_CitasTelPre cita : citas) {
@@ -80,25 +80,26 @@ public class ReporteCitasView extends AbstractPOIExcelView {
 			ExcelHelper.replaceVal(sheet, cont, 7, cita.getTG01SGENDES_CONT());
 			ExcelHelper.replaceVal(sheet, cont, 8, cita.getTG01SGENDES_TIPCONT_ABR());
 			ExcelHelper.replaceVal(sheet, cont, 9, cita.getCANAL());
-			ExcelHelper.replaceVal(sheet, cont, 10, cita.getVSUPERVISOR());
-			ExcelHelper.replaceVal(sheet, cont, 11, cita.getVGESTOR());
-			ExcelHelper.replaceVal(sheet, cont, 12, cita.getNIVEL());
-			ExcelHelper.replaceVal(sheet, cont, 13, cita.getGESTORGESTION());
-			ExcelHelper.replaceVal(sheet, cont, 14, cita.getTT01SGESOBS());
-			ExcelHelper.replaceVal(sheet, cont, 15, cita.getTM09SDTCVAL_TEL());
-			ExcelHelper.replaceVal(sheet, cont, 16, cita.getNOMCAMPANA());
-			ExcelHelper.replaceVal(sheet, cont, 17, dateTime.format(this.asDate(cita.getTT01DGESFEC())));
-			ExcelHelper.replaceVal(sheet, cont, 18, dateTime.format(this.asDate(cita.getTT01DGESCIT())));
-			ExcelHelper.replaceVal(sheet, cont, 19, cita.getCALIFICACION());
-			ExcelHelper.replaceVal(sheet, cont, 20, cita.getTT03NMONTOTOTPAGO_MES());
-			ExcelHelper.replaceVal(sheet, cont, 21, cita.getTG01SGENDES_ULT_SIT_NEG());
-			ExcelHelper.replaceVal(sheet, cont, 22, cita.getINTENSIDAD());
-			ExcelHelper.replaceVal(sheet, cont, 23, cita.getFRECUENCIA());
-			ExcelHelper.replaceVal(sheet, cont, 24, cita.getACCIONRESULCIT());
-			ExcelHelper.replaceVal(sheet, cont, 25, cita.getREACCIONRESULCIT());
-			ExcelHelper.replaceVal(sheet, cont, 26, cita.getCONTACTORESULTCIT());
-			ExcelHelper.replaceVal(sheet, cont, 27, cita.getOBSERVACIONRESULCIT());
-			ExcelHelper.replaceVal(sheet, cont, 28, cita.getTELEFONORESULCIT());
+			ExcelHelper.replaceVal(sheet, cont, 10, cita.getVUSUJEFE());
+			ExcelHelper.replaceVal(sheet, cont, 11, cita.getVSUPERVISOR());
+			ExcelHelper.replaceVal(sheet, cont, 12, cita.getVGESTOR());
+			ExcelHelper.replaceVal(sheet, cont, 13, cita.getNIVEL());
+			ExcelHelper.replaceVal(sheet, cont, 14, cita.getGESTORGESTION());
+			ExcelHelper.replaceVal(sheet, cont, 15, cita.getTT01SGESOBS());
+			ExcelHelper.replaceVal(sheet, cont, 16, cita.getTM09SDTCVAL_TEL());
+			ExcelHelper.replaceVal(sheet, cont, 17, cita.getNOMCAMPANA());
+			ExcelHelper.replaceVal(sheet, cont, 18, dateTime.format(this.asDate(cita.getTT01DGESFEC())));
+			ExcelHelper.replaceVal(sheet, cont, 19, dateTime.format(this.asDate(cita.getTT01DGESCIT())));
+			ExcelHelper.replaceVal(sheet, cont, 20, cita.getCALIFICACION());
+			ExcelHelper.replaceVal(sheet, cont, 21, cita.getTT03NMONTOTOTPAGO_MES());
+			ExcelHelper.replaceVal(sheet, cont, 22, cita.getTG01SGENDES_ULT_SIT_NEG());
+			ExcelHelper.replaceVal(sheet, cont, 23, cita.getINTENSIDAD());
+			ExcelHelper.replaceVal(sheet, cont, 24, cita.getFRECUENCIA());
+			ExcelHelper.replaceVal(sheet, cont, 25, cita.getACCIONRESULCIT());
+			ExcelHelper.replaceVal(sheet, cont, 26, cita.getREACCIONRESULCIT());
+			ExcelHelper.replaceVal(sheet, cont, 27, cita.getCONTACTORESULTCIT());
+			ExcelHelper.replaceVal(sheet, cont, 28, cita.getOBSERVACIONRESULCIT());
+			ExcelHelper.replaceVal(sheet, cont, 29, cita.getTELEFONORESULCIT());
 			cont++;
 		}
 		for (int i = 0; i < 29; i++) {
