@@ -97,7 +97,7 @@ public class ReporteCitasView extends AbstractPOIExcelView {
 			ExcelHelper.replaceVal(sheet, cont, 24, cita.getFRECUENCIA());
 			ExcelHelper.replaceVal(sheet, cont, 25, cita.getACCIONRESULCIT());
 			ExcelHelper.replaceVal(sheet, cont, 26, cita.getREACCIONRESULCIT());
-			ExcelHelper.replaceVal(sheet, cont, 27, cita.getCONTACTORESULTCIT());
+			ExcelHelper.replaceVal(sheet, cont, 27, cita.getCONTACTORESULCIT());
 			ExcelHelper.replaceVal(sheet, cont, 28, cita.getOBSERVACIONRESULCIT());
 			ExcelHelper.replaceVal(sheet, cont, 29, cita.getTELEFONORESULCIT());
 			cont++;

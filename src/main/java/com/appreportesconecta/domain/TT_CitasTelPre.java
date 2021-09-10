@@ -36,7 +36,7 @@ public class TT_CitasTelPre {
 	public Integer FRECUENCIA;
 	public String ACCIONRESULCIT;
 	public String REACCIONRESULCIT;
-	public String CONTACTORESULTCIT;
+	public String CONTACTORESULCIT;
 	public String OBSERVACIONRESULCIT;
 	public String TELEFONORESULCIT;
 	

@@ -3,10 +3,13 @@ package com.appreportesconecta.services;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.appreportesconecta.bean.TT_Citas;
+import com.appreportesconecta.controller.ReportesController;
 import com.appreportesconecta.dao.TT_AnalisisCarteraMapper;
 import com.appreportesconecta.dao.TT_CitasTelPreMapper;
 import com.appreportesconecta.domain.TM_Usuario;
@@ -17,6 +20,8 @@ import java.util.ArrayList;
 @Service
 public class ReportesServiceImpl implements ReportesService {
 
+	private static final Log LOG = LogFactory.getLog(ReportesController.class);
+	
 	@Autowired
 	private TT_CitasTelPreMapper citasTelPreMapper;
 	
@@ -33,12 +38,16 @@ public class ReportesServiceImpl implements ReportesService {
 		citas.setUsuario(tm_usuario.isRolGeneral() || searchAll ? "" : tm_usuario.getTM05SUSRNAM());
 		citas.setTipoRol(tm_usuario.getTipoRol());
 		
+		System.out.println(citas.getFechaFinGest()+" "+citas.getFechaIniGest()+" "+citas.getUsuario()+" "+ citas.getTipoRol()+ " " +searchFechaGestion+ " "+ searchAll );
 		List<TT_CitasTelPre> citasTelPres = new ArrayList<>();
-		if (searchFechaGestion) {
+		LOG.info("Entre  ");
+		if (searchFechaGestion) {LOG.info("CitasTel");
 			citasTelPres = citasTelPreMapper.selectCitasTel(citas);
 		} else {
-			citasTelPres = citasTelPreMapper.selectCitasTelByFechaCita(citas);
+			LOG.info("selectCitasTelByFechaCita");
+			citasTelPres = citasTelPreMapper.selectCitasTelByFecCita(citas);
 		}
+		LOG.info("SALIIIII ");
 		return citasTelPres;
 	}
 

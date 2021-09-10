@@ -3,8 +3,6 @@
 
 <mapper
 	namespace="com.appreportesconecta.dao.TT_CitasTelPreMapper">
-
-
 	<select id="selectCitasTel"
 		resultType="com.appreportesconecta.domain.TT_CitasTelPre"
 		statementType="CALLABLE"
@@ -15,16 +13,15 @@
 		#{usuario},#{tipoRol} )
 		}
 	</select>
-	<select id="selectCitasTelByFechaCita"
+	<select id="selectCitasTelByFecCita"
 		resultType="com.appreportesconecta.domain.TT_CitasTelPre"
 		statementType="CALLABLE"
 		parameterType="com.appreportesconecta.bean.TT_Citas">
 		{
-		CALL REPORT_BASE_CITASTELEFONICAS_FILCITASTEL_V2  ( #{fechaIniGest},
+		CALL REPORT_BASE_CITASTELEFONICAS_FILCITASTEL_V2 ( #{fechaIniGest},
 		#{fechaFinGest} ,
 		#{usuario},#{tipoRol} )
 		}
 	</select>
-
 
 </mapper>

@@ -11,5 +11,5 @@ import com.appreportesconecta.domain.TT_CitasTelPre;
 public interface TT_CitasTelPreMapper {
 
 	List<TT_CitasTelPre> selectCitasTel(TT_Citas citas);
-	List<TT_CitasTelPre> selectCitasTelByFechaCita(TT_Citas citas);
+	List<TT_CitasTelPre> selectCitasTelByFecCita(TT_Citas citas);
 }

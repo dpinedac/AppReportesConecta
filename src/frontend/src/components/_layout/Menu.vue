@@ -38,11 +38,11 @@ export default {
           icon: "pi pi-fw pi-home ",
           to: "/reporteCitasTel",
         },
-        {
+        /* {
           label: "Reporte análisis",
           icon: "pi pi-fw pi-home ",
           to: "/reporteAnalisisCartera",
-        },
+        }, */
       ],
     };
   },

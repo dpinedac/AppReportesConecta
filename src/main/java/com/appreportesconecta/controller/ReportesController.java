@@ -72,10 +72,10 @@ public class ReportesController {
 
 		LocalDate localDateIni = LocalDate.parse(fechini, formatter);
 		LocalDate localDateFin = LocalDate.parse(fechfin, formatter);
-		LOG.info("Entre  ");
+		
 		List<TT_CitasTelPre> listCitas = reportesService.selectByCitasTel(tm_usuario, localDateIni, localDateFin,
 				searchFechaGestion, searchAll);
-		LOG.info("SALIIIII ");
+	
 		tt_Citas_Component.setCitasTelPorPagina(listCitas, dataTableLazy);
 		response.setStatus(true);
 		response.setData(tt_Citas_Component.findCitasPage(dataTableLazy));

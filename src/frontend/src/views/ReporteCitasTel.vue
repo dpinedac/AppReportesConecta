@@ -144,7 +144,7 @@
           header="Resultado Reacción Cita"
         ></Column>
         <Column
-          field="CONTACTORESULTCIT"
+          field="CONTACTORESULCIT"
           header="Resultado Contacto Cita"
         ></Column>
         <Column
@@ -335,23 +335,22 @@ export default {
     },
     startProgress() {
       this.interval = setInterval(() => {
-        let newValue = 0
-        if (this.proccess >= 50) {
-           newValue = this.proccess + 1;
+        let newValue = 0;
+        if (this.proccess >= 10) {
+          newValue = this.proccess + 1;
         } else {
-           newValue = this.proccess + Math.floor(Math.random() * 10) + 1;
-          if (newValue >= 100) {
-            newValue = 100;
-          }
+          newValue = this.proccess + Math.floor(Math.random() * 1) + 1;
         }
-
+        if (newValue >= 100) {
+          newValue = 90;
+        }
         this.proccess = newValue;
-      }, 2000);
+      }, 10000);
     },
     endProgress() {
       clearInterval(this.interval);
       this.interval = null;
-      this.proccess = 0
+      this.proccess = 0;
     },
   },
 };
